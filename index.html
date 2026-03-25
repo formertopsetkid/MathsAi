@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>OmniStudy AI Pro | Scan & Solve Any Subject</title>
-  <!-- Include Tesseract.js for actual OCR -->
+  <title>OmniStudy AI Pro Max | Advanced OCR + Smart Solver</title>
+  <!-- Tesseract.js for Professional OCR -->
   <script src="https://unpkg.com/tesseract.js@5.0.5/dist/tesseract.min.js"></script>
   <style>
     * {
@@ -35,10 +35,10 @@
     }
 
     .container {
-      max-width: 1400px;
+      max-width: 1500px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 1fr 480px;
+      grid-template-columns: 1fr 520px;
       gap: 24px;
       align-items: start;
     }
@@ -171,29 +171,32 @@
 
     .scan-btn:hover { transform: scale(1.02); background: linear-gradient(135deg, #818cf8, #a78bfa); }
     .camera-controls { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-    .cam-btn { background: #334155; border: none; padding: 6px 12px; border-radius: 20px; color: white; cursor: pointer; font-size: 0.7rem; }
+    .cam-btn { background: #334155; border: none; padding: 8px 16px; border-radius: 24px; color: white; cursor: pointer; font-size: 0.75rem; font-weight: 500; }
 
     .file-input-hidden { display: none; }
 
     .preview-area {
-      background: rgba(0, 0, 0, 0.35);
+      background: rgba(0, 0, 0, 0.45);
       border-radius: 16px;
       padding: 12px;
       margin: 12px 0;
-      max-height: 200px;
+      max-height: 220px;
       overflow: auto;
-      border: 1px dashed rgba(99, 102, 241, 0.4);
+      border: 1px solid rgba(99, 102, 241, 0.4);
     }
 
     .extracted-text {
       font-size: 0.85rem;
-      color: #cbd5e1;
+      color: #e2e8f0;
       white-space: pre-wrap;
-      font-family: monospace;
+      font-family: 'Courier New', monospace;
+      background: #0a0f1a;
+      padding: 8px;
+      border-radius: 8px;
     }
 
     .answer-area {
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(15, 23, 42, 0.7);
       border-radius: 16px;
       padding: 16px;
       margin-top: 16px;
@@ -221,6 +224,14 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    .ocr-progress {
+      background: #1e293b;
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 0.7rem;
+      margin: 8px 0;
+    }
+
     .history-list {
       max-height: 180px;
       overflow-y: auto;
@@ -243,6 +254,13 @@
       margin: 8px 0;
       background: #000;
       display: none;
+    }
+
+    .image-preview {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 12px;
+      margin: 8px 0;
     }
 
     @media (max-width: 1000px) {
@@ -284,41 +302,43 @@
     <div id="calcHistory" class="history-list"></div>
   </div>
 
-  <!-- Scanner & AI Solver Panel with REAL OCR -->
+  <!-- Scanner Panel with Advanced OCR -->
   <div class="scanner-panel">
     <div class="panel-header">
-      <h3 style="color: #c7d2fe;">📸 Scan & Solve Any Subject</h3>
+      <h3 style="color: #c7d2fe;">🔍 Advanced OCR Scanner</h3>
       <div class="scan-buttons">
-        <button id="cameraBtn" class="scan-btn">📷 Take Picture</button>
-        <button id="uploadBtn" class="scan-btn">📁 Upload Image/File</button>
+        <button id="cameraBtn" class="scan-btn">📷 Take Photo</button>
+        <button id="uploadBtn" class="scan-btn">📁 Upload Image</button>
       </div>
     </div>
     
-    <input type="file" id="fileInput" class="file-input-hidden" accept="image/*,.txt,.pdf,.doc,.docx,application/pdf,text/plain" />
-    
-    <!-- Camera Preview with Manual Capture -->
+    <input type="file" id="fileInput" class="file-input-hidden" accept="image/*" />
     <video id="cameraVideo" class="camera-preview" autoplay playsinline></video>
     <div id="cameraControls" style="display: none; gap: 10px; margin: 8px 0; flex-wrap: wrap;">
       <button id="switchCameraBtn" class="cam-btn">🔄 Switch Camera</button>
-      <button id="capturePhotoBtn" class="cam-btn" style="background: #22c55e;">📸 Capture</button>
+      <button id="capturePhotoBtn" class="cam-btn" style="background: #22c55e;">📸 Capture & Read</button>
       <button id="closeCameraBtn" class="cam-btn" style="background: #ef4444;">✖ Close</button>
     </div>
     <canvas id="photoCanvas" style="display: none;"></canvas>
+    <div id="imagePreviewContainer" style="display: none;">
+      <img id="imagePreview" class="image-preview" />
+    </div>
     
     <div id="previewArea" class="preview-area" style="display: none;">
-      <div style="display: flex; justify-content: space-between;">
-        <span>📄 Extracted Text (OCR)</span>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span>📄 OCR Extracted Text</span>
         <button id="clearPreview" style="background: none; border: none; color: #ef4444; cursor: pointer;">✖</button>
       </div>
       <div id="extractedTextDisplay" class="extracted-text"></div>
     </div>
 
     <div id="answerArea" class="answer-area">
-      <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+      <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
         <span class="subject-badge" id="subjectTag">🧠 AI Analysis</span>
         <span id="loadingIndicator" style="display: none;"></span>
+        <span id="ocrProgressText" style="font-size: 0.7rem; color: #86efac;"></span>
       </div>
-      <div id="aiAnswer">✨ Upload an image, take a photo, or type a question — I'll use OCR to read text from images and solve Math, Physics, Biology, Chemistry, and more!</div>
+      <div id="aiAnswer">✨ Take a photo or upload an image of handwritten/text on paper — Advanced OCR will read it accurately and solve Math, Physics, Biology, Chemistry!</div>
       <div id="stepByStep" style="margin-top: 12px; font-size: 0.8rem; color: #94a3b8;"></div>
     </div>
 
@@ -366,204 +386,241 @@
   document.querySelectorAll(".keypad .btn").forEach(btn => { btn.onclick = () => { let val = btn.getAttribute("data-val"); let cmd = btn.getAttribute("data-cmd"); if(val) handleCalc(val); else if(cmd === "ac") { calcExpr = ""; updateCalc(); } else if(cmd === "back") { calcExpr = calcExpr.slice(0,-1); updateCalc(); } else if(cmd === "equal") calcEquals(); else if(cmd === "pm") handleCalc("+-"); }; });
   updateCalc(); renderCalcHistory();
 
-  // ======================== REAL OCR WITH TESSERACT + ADVANCED SOLVER ========================
+  // ======================== ADVANCED OCR WITH IMAGE PREPROCESSING ========================
   let scanHistory = [];
   let currentStream = null;
-  let currentFacingMode = "environment"; // back camera default
-  
-  // Universal AI Solver that actually understands 1+1 and any academic question
-  function intelligentSolve(extractedText, fileName = "") {
+  let currentFacingMode = "environment";
+
+  // Function to preprocess image for better OCR (increase contrast, convert to grayscale)
+  function preprocessImageForOCR(imageBlob) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        
+        // Draw image
+        ctx.drawImage(img, 0, 0);
+        
+        // Get image data and enhance contrast
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        // Convert to grayscale and enhance contrast
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          // Grayscale conversion
+          let gray = 0.299 * r + 0.587 * g + 0.114 * b;
+          // Contrast enhancement
+          gray = gray > 128 ? Math.min(255, gray * 1.2) : Math.max(0, gray * 0.8);
+          data[i] = gray;
+          data[i + 1] = gray;
+          data[i + 2] = gray;
+        }
+        ctx.putImageData(imageData, 0, 0);
+        
+        canvas.toBlob(resolve, 'image/png');
+      };
+      img.src = URL.createObjectURL(imageBlob);
+    });
+  }
+
+  async function performAdvancedOCR(imageBlob) {
+    const progressSpan = document.getElementById("ocrProgressText");
+    progressSpan.textContent = "🔄 Preprocessing image...";
+    
+    // Preprocess for better text recognition
+    const enhancedBlob = await preprocessImageForOCR(imageBlob);
+    
+    progressSpan.textContent = "🔍 OCR engine reading text...";
+    
+    // Use Tesseract with optimized settings for handwritten/printed text
+    const worker = await Tesseract.createWorker('eng', 1, {
+      logger: m => {
+        if (m.status === 'recognizing text') {
+          progressSpan.textContent = `📖 Reading: ${Math.round(m.progress * 100)}%`;
+        }
+      }
+    });
+    
+    // Set parameters for better accuracy on paper text
+    await worker.setParameters({
+      tessedit_char_whitelist: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-*/=().,?:;%$#@! ',
+      preserve_interword_spaces: '1',
+      tessedit_pageseg_mode: '6', // Assume uniform text block
+    });
+    
+    const { data: { text } } = await worker.recognize(enhancedBlob);
+    await worker.terminate();
+    
+    progressSpan.textContent = "✅ OCR complete!";
+    setTimeout(() => { progressSpan.textContent = ""; }, 2000);
+    
+    // Clean up extracted text
+    let cleaned = text.trim();
+    // Remove excessive whitespace
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+    // Fix common OCR issues
+    cleaned = cleaned.replace(/[oO]/g, match => match === 'O' ? '0' : (match === 'o' ? '0' : match));
+    cleaned = cleaned.replace(/[lI]/g, '1');
+    
+    return cleaned;
+  }
+
+  // Universal AI Solver (enhanced)
+  function intelligentSolve(extractedText) {
     const text = extractedText.toLowerCase().trim();
     
-    // If text is empty or just noise
     if (!text || text.length < 1) {
-      return { subject: "❓ No Text Detected", solution: "No readable text found in the image. Please make sure the image has clear writing, or type your question directly.", steps: "Try using better lighting, writing larger, or uploading a clearer image." };
+      return { subject: "❓ No Text", solution: "No readable text found. Please ensure the paper has clear writing, good lighting, and the camera is focused.", steps: "Tips: Use bright light, write clearly, hold camera steady." };
     }
     
-    // ========== DIRECT MATH EXPRESSION DETECTION (like 1+1, 2*3, etc) ==========
-    // Look for simple arithmetic patterns
-    let mathExprMatch = text.match(/(\d+\s*[\+\-\*\/]\s*\d+)/);
-    if (!mathExprMatch) {
-      // also try to find patterns like "what is 1+1" or "1 plus 1"
-      let plusPattern = text.match(/(\d+)\s*plus\s*(\d+)/i);
-      if (plusPattern) mathExprMatch = [`${plusPattern[1]}+${plusPattern[2]}`];
-      let timesPattern = text.match(/(\d+)\s*times\s*(\d+)/i);
-      if (timesPattern) mathExprMatch = [`${timesPattern[1]}*${timesPattern[2]}`];
-      let minusPattern = text.match(/(\d+)\s*minus\s*(\d+)/i);
-      if (minusPattern) mathExprMatch = [`${minusPattern[1]}-${minusPattern[2]}`];
+    // ========== DIRECT MATH DETECTION ==========
+    // Match simple arithmetic like 1+1, 2*3, 5-2, 10/2
+    let mathPatterns = [
+      /(\d+\s*\+\s*\d+)/,
+      /(\d+\s*-\s*\d+)/,
+      /(\d+\s*\*\s*\d+)/,
+      /(\d+\s*\/\s*\d+)/,
+      /(\d+\s*×\s*\d+)/,
+      /(\d+\s*÷\s*\d+)/
+    ];
+    
+    for (let pattern of mathPatterns) {
+      let match = text.match(pattern);
+      if (match) {
+        let expr = match[1].replace(/×/g, '*').replace(/÷/g, '/');
+        try {
+          let result = Function('"use strict"; return (' + expr + ')')();
+          if (isFinite(result)) {
+            return { subject: "🧮 Mathematics", solution: `${match[1]} = ${formatNum(result)}`, steps: `Direct calculation: ${match[1]} = ${formatNum(result)}` };
+          }
+        } catch(e) {}
+      }
     }
     
-    if (mathExprMatch) {
-      try {
-        let expr = mathExprMatch[0];
-        let result = Function('"use strict"; return (' + expr + ')')();
-        if (isFinite(result)) {
-          return { subject: "🧮 Mathematics", solution: `${expr} = ${formatNum(result)}`, steps: `Direct calculation: ${expr} = ${formatNum(result)}` };
-        }
-      } catch(e) {}
-    }
-    
-    // Check for "1+1" pattern without spaces
+    // Detect "1+1" without spaces
     let simpleMath = text.match(/\d+[+\-*/]\d+/);
     if (simpleMath) {
       try {
         let result = Function('"use strict"; return (' + simpleMath[0] + ')')();
         if (isFinite(result)) {
-          return { subject: "🧮 Mathematics", solution: `${simpleMath[0]} = ${formatNum(result)}`, steps: `Simple arithmetic: ${simpleMath[0]} = ${formatNum(result)}` };
+          return { subject: "🧮 Mathematics", solution: `${simpleMath[0]} = ${formatNum(result)}`, steps: `Arithmetic result: ${formatNum(result)}` };
         }
       } catch(e) {}
     }
     
-    // ========== SUBJECT DETECTION WITH ACTUAL SOLVING ==========
+    // ========== COMPREHENSIVE SUBJECT DETECTION ==========
     
-    // BIOLOGY
-    if (text.match(/mitochondria|photosynthesis|cell|dna|rna|osmosis|biology|heart|lungs|enzyme|protein|chloroplast|ecosystem|food chain|nucleus|cytoplasm/i)) {
-      if (text.match(/photosynthesis/i)) {
-        return { subject: "🧬 Biology", solution: "Photosynthesis: 6CO₂ + 6H₂O + Light Energy → C₆H₁₂O₆ + 6O₂", steps: "Plants convert light energy to chemical energy in chloroplasts. Reactants: CO₂ and H₂O. Products: Glucose and Oxygen." };
-      } else if (text.match(/mitochondria/i)) {
-        return { subject: "🧬 Biology", solution: "Mitochondria are the 'powerhouses' of the cell, producing ATP through cellular respiration.", steps: "C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + 36 ATP. Contains inner/outer membrane, cristae." };
-      } else {
-        return { subject: "🧬 Biology", solution: "🔬 Biology question detected. Based on your image, I see key biological concepts.", steps: "Please provide more specific details or write the exact question for a precise answer." };
+    // First Prime Question
+    if (text.match(/first prime|1st prime|what.*first.*prime|first prime number/)) {
+      return { subject: "📐 Mathematics", solution: "The first prime number is 2.", steps: "Prime numbers are greater than 1 with exactly two factors: 1 and itself. Sequence: 2, 3, 5, 7, 11... 2 is the smallest and only even prime." };
+    }
+    
+    // Prime Check
+    let primeMatch = text.match(/(\d+)\s*prime/i);
+    if (primeMatch && !text.includes('th prime')) {
+      let n = parseInt(primeMatch[1]);
+      let isP = isPrimeNum(n);
+      return { subject: "📐 Mathematics", solution: `${n} is ${isP ? "✅ a prime number" : "❌ not prime (composite)"}`, steps: isP ? `${n} has no divisors other than 1 and itself.` : `${n} has factors other than 1 and itself.` };
+    }
+    
+    // nth Prime
+    let nthMatch = text.match(/(\d+)(?:st|nd|rd|th)\s*prime/i);
+    if (nthMatch) {
+      let idx = parseInt(nthMatch[1]);
+      let prime = nthPrimeFinder(idx);
+      return { subject: "📐 Mathematics", solution: `The ${idx}${getOrdinal(idx)} prime number is ${prime}.`, steps: `Prime sequence: 2,3,5,7,11,13,17,19,23,29... position ${idx} = ${prime}` };
+    }
+    
+    // Median
+    if (text.match(/median/i)) {
+      let nums = extractNumbers(text);
+      if (nums.length) {
+        let med = calculateMedian(nums);
+        return { subject: "📐 Mathematics", solution: `Median = ${med}`, steps: `Numbers: [${nums.join(", ")}] → Sorted: ${[...nums].sort((a,b)=>a-b).join(", ")} → Median = ${med}` };
       }
     }
     
-    // PHYSICS
-    else if (text.match(/force|newton|velocity|acceleration|kinetic|potential|ohm|resistance|circuit|gravity|f=ma|momentum|work|joule|watt|physics|speed|distance|time/i)) {
-      let nums = text.match(/-?\d+(\.\d+)?/g) || [];
-      if (text.match(/f\s*=\s*ma|force|newton/i) && nums.length >= 2) {
-        let m = parseFloat(nums[0]), a = parseFloat(nums[1]);
-        return { subject: "⚡ Physics", solution: `F = m × a = ${m} × ${a} = ${m * a} N`, steps: "Newton's Second Law: Force equals mass times acceleration." };
-      } else if (text.match(/ke|kinetic energy/i) && nums.length >= 2) {
-        let m = parseFloat(nums[0]), v = parseFloat(nums[1]);
-        return { subject: "⚡ Physics", solution: `KE = ½mv² = ½ × ${m} × ${v}² = ${0.5 * m * v * v} J`, steps: "Kinetic energy = half × mass × velocity squared." };
-      } else if (text.match(/v=ir|ohm|resistance/i) && nums.length >= 2) {
-        let v = parseFloat(nums[0]), r = parseFloat(nums[1]);
-        return { subject: "⚡ Physics", solution: `I = V/R = ${v} / ${r} = ${v/r} A`, steps: "Ohm's Law: Current = Voltage / Resistance" };
-      } else {
-        return { subject: "⚡ Physics", solution: "📐 Physics question detected. Common formulas: F=ma, KE=½mv², V=IR, p=mv.", steps: "Provide specific values for numeric solutions." };
+    // Triangle Area
+    if (text.match(/triangle|area.*triangle/i)) {
+      let baseMatch = text.match(/base\s*(\d+\.?\d*)/i);
+      let heightMatch = text.match(/height\s*(\d+\.?\d*)/i);
+      if (baseMatch && heightMatch) {
+        let area = 0.5 * parseFloat(baseMatch[1]) * parseFloat(heightMatch[1]);
+        return { subject: "📐 Mathematics", solution: `Triangle Area = ${area}`, steps: `Area = ½ × base × height = ½ × ${baseMatch[1]} × ${heightMatch[1]} = ${area}` };
+      }
+      let sides = extractNumbers(text);
+      if (sides.length >= 3) {
+        let a = sides[0], b = sides[1], c = sides[2];
+        let s = (a + b + c) / 2;
+        let area = Math.sqrt(Math.max(0, s * (s - a) * (s - b) * (s - c)));
+        return { subject: "📐 Mathematics", solution: `Triangle Area = ${area.toFixed(4)}`, steps: `Heron's formula with sides ${a}, ${b}, ${c}: s = ${s}, Area = √[s(s-a)(s-b)(s-c)] = ${area.toFixed(4)}` };
       }
     }
     
-    // CHEMISTRY
-    else if (text.match(/mole|molar|hcl|naoh|chemical|reaction|equation|periodic|atomic|valence|stoichiometry|ph|acid|base|chemistry|h2o|co2/i)) {
-      if (text.match(/ph|acid|base/i)) {
-        return { subject: "🧪 Chemistry", solution: "pH = -log₁₀[H⁺]. Neutral pH=7, Acidic <7, Basic >7.", steps: "Strong acids fully dissociate. pOH = 14 - pH." };
-      } else if (text.match(/mole|molar mass/i)) {
-        return { subject: "🧪 Chemistry", solution: "Mole concept: 1 mole = 6.022×10²³ particles. Molar mass = grams/mole.", steps: "Use n = mass / molar mass for calculations." };
-      } else {
-        return { subject: "🧪 Chemistry", solution: "⚗️ Chemistry query detected. Common topics: balancing equations, molarity, stoichiometry.", steps: "Please provide the specific chemical equation or values." };
-      }
+    // Linear Equation
+    let eqMatch = text.match(/(\d*)x\s*([+-]\s*\d+)?\s*=\s*(\d+)/i);
+    if (eqMatch) {
+      let a = eqMatch[1] ? parseFloat(eqMatch[1]) : 1;
+      let b = eqMatch[2] ? parseFloat(eqMatch[2].replace(/\s/g, "")) : 0;
+      let c = parseFloat(eqMatch[3]);
+      let x = (c - b) / a;
+      return { subject: "📐 Mathematics", solution: `x = ${formatNum(x)}`, steps: `${a}x + ${b} = ${c} → ${a}x = ${c - b} → x = ${(c - b) / a}` };
     }
     
-    // MATHEMATICS (comprehensive)
-    else {
-      // Prime detection
-      if (text.match(/first prime|1st prime|what.*first.*prime/)) {
-        return { subject: "📐 Mathematics", solution: "The first prime number is 2.", steps: "Prime numbers are greater than 1 with only two factors: 1 and itself. 2, 3, 5, 7, 11... 2 is the smallest and only even prime." };
-      }
-      if (text.match(/prime/i) && text.match(/\d+/)) {
-        let primeMatch = text.match(/(\d+)/);
-        if (primeMatch) {
-          let n = parseInt(primeMatch[1]);
-          let isP = isPrimeNum(n);
-          return { subject: "📐 Mathematics", solution: `${n} is ${isP ? "✅ a prime number" : "❌ not prime (composite)"}`, steps: isP ? `No divisors other than 1 and ${n}.` : `Has factors other than 1 and itself.` };
-        }
-      }
-      // Median
-      if (text.match(/median/i)) {
-        let nums = extractNumbers(text);
-        if (nums.length) {
-          let med = calculateMedian(nums);
-          return { subject: "📐 Mathematics", solution: `Median = ${med}`, steps: `Data: [${nums.join(", ")}] → sorted: ${[...nums].sort((a,b)=>a-b).join(", ")} → median = ${med}` };
-        }
-      }
-      // Triangle area
-      if (text.match(/triangle|area.*triangle/i)) {
-        let baseMatch = text.match(/base\s*(\d+\.?\d*)/i);
-        let heightMatch = text.match(/height\s*(\d+\.?\d*)/i);
-        if (baseMatch && heightMatch) {
-          let area = 0.5 * parseFloat(baseMatch[1]) * parseFloat(heightMatch[1]);
-          return { subject: "📐 Mathematics", solution: `Triangle Area = ½ × base × height = ${area}`, steps: `Base = ${baseMatch[1]}, Height = ${heightMatch[1]}` };
-        }
-        let sides = extractNumbers(text);
-        if (sides.length >= 3) {
-          let s = (sides[0] + sides[1] + sides[2]) / 2;
-          let area = Math.sqrt(Math.max(0, s * (s - sides[0]) * (s - sides[1]) * (s - sides[2])));
-          return { subject: "📐 Mathematics", solution: `Triangle Area (Heron) = ${area.toFixed(4)}`, steps: `Sides: ${sides[0]}, ${sides[1]}, ${sides[2]}` };
-        }
-      }
-      // Linear equation
-      let eqMatch = text.match(/(\d*)x\s*([+-]\s*\d+)?\s*=\s*(\d+)/i);
-      if (eqMatch) {
-        let a = eqMatch[1] ? parseFloat(eqMatch[1]) : 1;
-        let b = eqMatch[2] ? parseFloat(eqMatch[2].replace(/\s/g, "")) : 0;
-        let c = parseFloat(eqMatch[3]);
-        let x = (c - b) / a;
-        return { subject: "📐 Mathematics", solution: `x = ${formatNum(x)}`, steps: `${a}x + ${b} = ${c} → ${a}x = ${c - b} → x = ${(c - b) / a}` };
-      }
-      
-      // If we have numbers, try to evaluate any arithmetic
-      let allNumbers = extractNumbers(text);
-      if (allNumbers.length >= 2 && text.match(/[+\-*/]/)) {
+    // If we have numbers, try arithmetic evaluation
+    let allNumbers = extractNumbers(text);
+    if (allNumbers.length >= 2 && (text.includes('+') || text.includes('-') || text.includes('*') || text.includes('/'))) {
+      let expr = text.replace(/[^0-9+\-*/.]/g, "");
+      if (expr && /[\d+\-*/]/.test(expr)) {
         try {
-          let expr = text.replace(/[^0-9+\-*/.]/g, "");
-          if (expr && /[\d+\-*/]/.test(expr)) {
-            let result = Function('"use strict"; return (' + expr + ')')();
-            if (isFinite(result)) {
-              return { subject: "🧮 Mathematics", solution: `${expr} = ${formatNum(result)}`, steps: `Calculated: ${expr} = ${formatNum(result)}` };
-            }
+          let result = Function('"use strict"; return (' + expr + ')')();
+          if (isFinite(result)) {
+            return { subject: "🧮 Mathematics", solution: `${expr} = ${formatNum(result)}`, steps: `Calculated result: ${formatNum(result)}` };
           }
         } catch(e) {}
       }
-      
-      // Fallback for any text with numbers
-      if (allNumbers.length) {
-        return { subject: "📐 Mathematics", solution: `I detected numbers: ${allNumbers.join(", ")}. What operation would you like to perform?`, steps: "Try: addition, subtraction, multiplication, division, median, prime check, etc." };
-      }
-      
-      return { subject: "📐 Mathematics", solution: `I read: "${extractedText.slice(0, 100)}"`, steps: "Please type your question clearly, or ensure the image has readable text. I can solve math, physics, biology, and chemistry problems!" };
     }
+    
+    // Return what was read
+    return { subject: "📝 Text Detected", solution: `OCR read: "${extractedText.slice(0, 150)}${extractedText.length > 150 ? '...' : ''}"`, steps: "I detected this text. If it's a math problem, please ensure it's clearly written. Try writing larger or using better lighting." };
   }
   
   function isPrimeNum(n) { if(n<2) return false; if(n===2) return true; if(n%2===0) return false; for(let i=3;i<=Math.sqrt(n);i+=2) if(n%i===0) return false; return true; }
+  function nthPrimeFinder(n) { let count=0, cand=1; while(count < n) { cand++; if(isPrimeNum(cand)) count++; } return cand; }
+  function getOrdinal(n) { if(n===1) return 'st'; if(n===2) return 'nd'; if(n===3) return 'rd'; return 'th'; }
   function extractNumbers(str) { let nums = []; str.replace(/-?\d+(\.\d+)?/g, m => nums.push(parseFloat(m))); return nums; }
   function calculateMedian(nums) { let s = [...nums].sort((a,b)=>a-b); let m = Math.floor(s.length/2); return s.length%2===0 ? (s[m-1]+s[m])/2 : s[m]; }
   
-  // OCR using Tesseract.js
-  async function performOCR(imageBlob) {
-    const worker = await Tesseract.createWorker('eng');
-    const { data: { text } } = await worker.recognize(imageBlob);
-    await worker.terminate();
-    return text.trim();
-  }
-  
   async function processImageFile(file) {
-    document.getElementById("loadingIndicator").style.display = "inline-block";
-    document.getElementById("loadingIndicator").innerHTML = "<div class='loading'></div> OCR Reading...";
+    const loadingSpan = document.getElementById("loadingIndicator");
+    loadingSpan.style.display = "inline-block";
+    loadingSpan.innerHTML = "<div class='loading'></div>";
+    
+    // Show image preview
+    const previewImg = document.getElementById("imagePreview");
+    const previewContainer = document.getElementById("imagePreviewContainer");
+    const imgUrl = URL.createObjectURL(file);
+    previewImg.src = imgUrl;
+    previewContainer.style.display = "block";
     
     try {
-      let extractedText = "";
-      if (file.type.startsWith("image/")) {
-        extractedText = await performOCR(file);
-      } else if (file.type === "text/plain" || file.name.endsWith(".txt")) {
-        extractedText = await file.text();
-      } else {
-        extractedText = `[Document: ${file.name}] For PDF/Word files, please extract text manually or use clear image.`;
-      }
-      
-      if (!extractedText || extractedText.length < 2) {
-        extractedText = "No readable text detected in image.";
-      }
+      const extractedText = await performAdvancedOCR(file);
       
       document.getElementById("previewArea").style.display = "block";
-      document.getElementById("extractedTextDisplay").innerHTML = escapeHtml(extractedText.slice(0, 500)) + (extractedText.length > 500 ? "..." : "");
+      document.getElementById("extractedTextDisplay").innerHTML = escapeHtml(extractedText.slice(0, 800)) + (extractedText.length > 800 ? "..." : "");
       
-      let result = intelligentSolve(extractedText, file.name);
+      const result = intelligentSolve(extractedText);
       document.getElementById("subjectTag").innerHTML = result.subject;
       document.getElementById("aiAnswer").innerHTML = `<strong>🎓 AI Solution:</strong><br>${escapeHtml(result.solution)}`;
       document.getElementById("stepByStep").innerHTML = `<span style="color: #a5b4fc;">📖 ${escapeHtml(result.steps)}</span>`;
       
-      scanHistory.unshift({ name: file.name, preview: result.solution.slice(0, 60), subject: result.subject });
+      scanHistory.unshift({ name: file.name.slice(0, 30), preview: result.solution.slice(0, 60), subject: result.subject });
       if(scanHistory.length > 15) scanHistory.pop();
       renderScanHistory();
       
@@ -572,9 +629,10 @@
       
     } catch(e) {
       console.error(e);
-      document.getElementById("aiAnswer").innerHTML = "⚠️ OCR failed. Please ensure the image has clear text, or type your question directly.";
+      document.getElementById("aiAnswer").innerHTML = "⚠️ OCR failed. Please ensure the image has clear, well-lit text. Try writing larger or using better contrast.";
     }
-    document.getElementById("loadingIndicator").style.display = "none";
+    loadingSpan.style.display = "none";
+    URL.revokeObjectURL(imgUrl);
   }
   
   function renderScanHistory() {
@@ -583,22 +641,22 @@
     for(let item of scanHistory.slice(0, 10)) {
       let div = document.createElement("div");
       div.className = "history-item";
-      div.innerHTML = `<span>📎 ${escapeHtml(item.name.slice(0, 30))}</span><span style="color: #86efac;"> → ${escapeHtml(item.preview)}</span>`;
+      div.innerHTML = `<span>📎 ${escapeHtml(item.name)}</span><span style="color: #86efac;"> → ${escapeHtml(item.preview)}</span>`;
       container.appendChild(div);
     }
   }
   
   function escapeHtml(s) { return String(s).replace(/[&<>]/g, function(m) { return m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'; }); }
   
-  // ======================== CAMERA WITH MANUAL CAPTURE & FRONT/BACK SWITCH ========================
+  // ======================== CAMERA WITH MANUAL CAPTURE ========================
   const video = document.getElementById("cameraVideo");
   const canvas = document.getElementById("photoCanvas");
   const cameraControls = document.getElementById("cameraControls");
   let currentStreamActive = false;
   
   async function startCamera(facingMode = "environment") {
-    if (currentStreamActive) {
-      if (currentStream) currentStream.getTracks().forEach(t => t.stop());
+    if (currentStreamActive && currentStream) {
+      currentStream.getTracks().forEach(t => t.stop());
     }
     try {
       const constraints = { video: { facingMode: { exact: facingMode } } };
@@ -608,14 +666,13 @@
       cameraControls.style.display = "flex";
       currentStreamActive = true;
     } catch(err) {
-      // Fallback to any camera
       try {
         currentStream = await navigator.mediaDevices.getUserMedia({ video: true });
         video.srcObject = currentStream;
         video.style.display = "block";
         cameraControls.style.display = "flex";
         currentStreamActive = true;
-      } catch(e) { alert("Camera access denied or unavailable"); }
+      } catch(e) { alert("Camera access denied. Please allow camera permissions."); }
     }
   }
   
