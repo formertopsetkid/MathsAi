@@ -1,635 +1,636 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8" />
+  <title>Advanced AI Math Professor | Auto-Solve Any Question</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Professor AI | Auto-Solve Math Teacher</title>
   <style>
+    /* ========== CLASSIC POLISHED CSS (from original design) ========== */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+    }
+
+    :root {
+      --bg1: #071026;
+      --bg2: #0b1220;
+      --muted: #9ca3af;
+      --accent: #6366f1;
+      --accent2: #60a5fa;
+      --success: #22c55e;
+      --danger: #ef4444;
     }
 
     body {
-      background: radial-gradient(ellipse at 20% 30%, rgba(99, 102, 241, 0.15), #020617);
       min-height: 100vh;
-      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(96, 165, 250, 0.06), transparent 8%),
+                  radial-gradient(900px 500px at 90% 90%, rgba(99, 102, 241, 0.04), transparent 6%),
+                  linear-gradient(180deg, var(--bg1), var(--bg2));
+      color: #e6eef8;
+      padding: 28px;
     }
 
-    /* main teacher dashboard */
-    .teacher-dashboard {
-      max-width: 1400px;
-      margin: 0 auto;
+    .container {
+      width: 1000px;
+      max-width: 98vw;
       display: grid;
-      grid-template-columns: 1fr 420px;
-      gap: 28px;
+      grid-template-columns: 1fr 460px;
+      gap: 20px;
+      align-items: start;
     }
 
-    /* calculator panel */
-    .calc-panel {
-      background: rgba(10, 14, 30, 0.75);
-      backdrop-filter: blur(16px);
-      border-radius: 2rem;
-      border: 1px solid rgba(129, 140, 248, 0.25);
-      padding: 1.6rem;
-      box-shadow: 0 25px 40px -12px black;
+    .calculator-wrapper {
+      padding: 20px;
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.85), rgba(12, 18, 30, 0.6));
+      box-shadow: 0 20px 50px rgba(2, 6, 23, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.06);
+      position: relative;
+      overflow: hidden;
     }
 
-    .calc-header {
+    .glow-orb {
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(96, 165, 250, 0.14), transparent 55%);
+      top: -80px;
+      right: -80px;
+      filter: blur(6px);
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    .calculator-header {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 1.2rem;
       align-items: center;
+      margin-bottom: 12px;
     }
-    .ai-teacher-badge {
-      background: linear-gradient(135deg, #10b98120, #3b82f620);
-      padding: 6px 14px;
-      border-radius: 40px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #a7f3d0;
-      border: 0.5px solid #10b98140;
-      display: flex;
+
+    .calculator-title {
+      font-size: 0.95rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .ai-pill {
+      display: inline-flex;
+      align-items: center;
       gap: 8px;
-      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(99, 102, 241, 0.12);
+      color: #c7d2fe;
+      font-size: 0.75rem;
     }
-    .pulse {
+
+    .ai-dot {
       width: 8px;
       height: 8px;
-      background: #10b981;
       border-radius: 50%;
-      box-shadow: 0 0 8px #10b981;
-      animation: pulse-glow 1s infinite;
+      background: var(--success);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+      animation: pulse 1.4s infinite;
     }
-    @keyframes pulse-glow { 0% { opacity: 0.5; } 100% { opacity: 1; transform: scale(1.2); } }
 
-    .display-screen {
-      background: #030712cc;
-      border-radius: 1.5rem;
-      padding: 1.2rem;
-      margin: 16px 0;
-      border: 1px solid #1e293b;
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.45; }
+      100% { transform: scale(1); opacity: 1; }
     }
-    .expr-line {
-      min-height: 28px;
+
+    .display {
+      margin-top: 8px;
+      padding: 14px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+      border: 1px solid rgba(148, 163, 184, 0.04);
+      box-shadow: inset 0 -6px 18px rgba(2, 6, 23, 0.25);
+    }
+
+    .expression {
+      min-height: 22px;
+      font-size: 0.95rem;
+      color: var(--muted);
       text-align: right;
-      color: #9ca3af;
-      word-break: break-word;
+      word-break: break-all;
     }
-    .result-line {
-      font-size: 2.4rem;
+
+    .result {
+      margin-top: 8px;
+      font-size: 2rem;
       font-weight: 700;
       text-align: right;
-      color: #f1f5f9;
-      letter-spacing: -0.02em;
+      color: #e6eef8;
+      letter-spacing: 0.01em;
     }
-    .auto-correction {
-      background: #1e293b80;
-      border-radius: 40px;
-      padding: 6px 12px;
-      font-size: 0.75rem;
+
+    .ai-suggestion {
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: #a5b4fc;
       display: flex;
       justify-content: space-between;
-      margin-top: 12px;
-      color: #c7d2fe;
+      align-items: center;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: all .18s ease;
     }
-    .key-grid {
+
+    .ai-suggestion.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .keypad {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin: 20px 0 16px;
-    }
-    .key {
-      background: linear-gradient(135deg, #1e293b, #0f172a);
-      border: none;
-      padding: 14px 0;
-      border-radius: 1.2rem;
-      font-weight: 600;
-      font-size: 1.1rem;
-      color: #e2e8f0;
-      cursor: pointer;
-      transition: 0.08s linear;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-    }
-    .key:active { transform: translateY(2px);}
-    .op-key { background: linear-gradient(135deg, #4f46e5, #6366f1); color: white;}
-    .ac-key { background: linear-gradient(135deg, #b91c1c, #dc2626);}
-    .eq-key { background: linear-gradient(115deg, #10b981, #059669); grid-column: span 2;}
-    .history-list {
-      max-height: 180px;
-      overflow-y: auto;
-      margin-top: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .history-entry {
-      background: rgba(255,255,255,0.02);
-      border-radius: 14px;
-      padding: 8px 12px;
-      font-size: 0.8rem;
-      display: flex;
-      justify-content: space-between;
-      cursor: pointer;
-      border: 1px solid #1e293b;
+      gap: 10px;
+      margin-top: 14px;
     }
 
-    /* right panel: AUTO-SOLVE teacher — no need to rephrase, it detects intent */
-    .teacher-panel {
-      background: rgba(8, 12, 26, 0.8);
-      backdrop-filter: blur(16px);
-      border-radius: 2rem;
-      border: 1px solid rgba(129, 140, 248, 0.3);
-      padding: 1.6rem;
+    .btn {
+      position: relative;
+      border: none;
+      outline: none;
+      border-radius: 12px;
+      padding: 14px 0;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #e6eef8;
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.95), rgba(10, 14, 20, 0.95));
+      box-shadow: 0 10px 18px rgba(2, 6, 23, 0.7), 0 0 0 1px rgba(148, 163, 184, 0.03);
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+
+    .btn:active {
+      transform: translateY(2px) scale(.995);
+    }
+
+    .btn-operator {
+      background: linear-gradient(180deg, rgba(129, 140, 248, 0.95), rgba(59, 130, 246, 0.9));
+      color: #071028;
+    }
+
+    .btn-ac {
+      background: linear-gradient(180deg, rgba(248, 113, 113, 0.95), rgba(185, 28, 28, 0.95));
+      color: #fff;
+    }
+
+    .btn-equal {
+      grid-column: span 2;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #022c22;
+      font-weight: 800;
+    }
+
+    .panel {
+      padding: 18px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(8, 12, 20, 0.6), rgba(10, 14, 20, 0.45));
+      border: 1px solid rgba(148, 163, 184, 0.04);
+      box-shadow: 0 18px 40px rgba(2, 6, 23, 0.6);
+      min-height: 420px;
+    }
+
+    .panel h3 {
+      color: #c7d2fe;
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .algebra-input {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .algebra-input input {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.06);
+      background: rgba(15, 23, 42, 0.85);
+      color: #e6eef8;
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    .algebra-input button {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .algebra-output {
+      margin-top: 8px;
+      padding: 12px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.005));
+      border: 1px solid rgba(148, 163, 184, 0.03);
+      color: #e6eef8;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      min-height: 120px;
+      overflow: auto;
+    }
+
+    .suggestions {
+      margin-top: 10px;
       display: flex;
       flex-direction: column;
-    }
-    .teacher-header {
-      display: flex;
-      gap: 12px;
-      align-items: baseline;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-    .query-area {
-      display: flex;
-      gap: 12px;
-      margin: 12px 0;
-    }
-    .query-area input {
-      flex: 1;
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 60px;
-      padding: 14px 18px;
-      color: white;
-      font-size: 0.95rem;
-      outline: none;
-      transition: 0.2s;
-    }
-    .query-area input:focus { border-color: #818cf8; box-shadow: 0 0 0 2px #818cf830;}
-    .solve-btn {
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      border: none;
-      border-radius: 60px;
-      padding: 0 28px;
-      font-weight: 700;
-      cursor: pointer;
-      color: white;
-      font-size: 0.9rem;
-    }
-    .teacher-answer {
-      background: #0f172a80;
-      border-radius: 1.2rem;
-      padding: 1.2rem;
-      margin: 12px 0;
-      border-left: 5px solid #10b981;
-      line-height: 1.5;
-      font-size: 0.95rem;
-      color: #e2e8f0;
-    }
-    .step-detail {
-      margin-top: 12px;
-      font-size: 0.85rem;
-      color: #94a3b8;
-      border-top: 1px dashed #334155;
-      padding-top: 12px;
-    }
-    .quick-suggestions {
-      display: flex;
-      flex-wrap: wrap;
       gap: 8px;
-      margin: 8px 0;
     }
-    .suggest-chip {
-      background: #1e293b;
-      border-radius: 40px;
-      padding: 6px 14px;
-      font-size: 0.7rem;
+
+    .suggestion-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(148, 163, 184, 0.03);
+    }
+
+    .btn-yes {
+      background: var(--success);
+      color: #04260f;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: none;
       cursor: pointer;
-      transition: 0.1s;
+      margin-right: 6px;
     }
-    .history-qa {
-      max-height: 210px;
-      overflow-y: auto;
+
+    .btn-no {
+      background: #374151;
+      color: #e6eef8;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .history {
       margin-top: 12px;
+      max-height: 160px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    .qa-row {
-      background: rgba(255,255,240,0.02);
-      border-radius: 14px;
-      padding: 8px 12px;
-      margin-bottom: 8px;
-      font-size: 0.8rem;
+
+    .history-item {
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(148, 163, 184, 0.03);
+      font-size: 0.9rem;
+      color: #dbeafe;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
       cursor: pointer;
     }
-    hr { border-color: #1e293b; margin: 12px 0;}
-    @media (max-width: 860px) {
-      .teacher-dashboard { grid-template-columns: 1fr; }
+
+    @media (max-width: 980px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      .panel {
+        order: 2;
+        margin-top: 12px;
+      }
     }
   </style>
 </head>
 <body>
-<div class="teacher-dashboard">
-  <!-- Left Calculator -->
-  <div class="calc-panel">
-    <div class="calc-header">
-      <div class="ai-teacher-badge"><span class="pulse"></span> AI Teacher Sync</div>
-      <span style="font-size:0.7rem; color:#6b7280;">auto-correct · smart evaluate</span>
-    </div>
-    <div class="display-screen">
-      <div class="expr-line" id="calcExpr"></div>
-      <div class="result-line" id="calcRes">0</div>
-      <div id="calcHint" class="auto-correction" style="opacity:0; visibility:hidden;">
-        <span id="hintText"></span><span style="font-size:0.7rem;">↵ Tab to apply</span>
+  <div class="container">
+    <!-- Calculator Wrapper -->
+    <div class="calculator-wrapper">
+      <div class="glow-orb"></div>
+      <div class="calculator-header">
+        <div class="calculator-title">Advanced Calculator</div>
+        <div class="ai-pill"><div class="ai-dot"></div><div>AI Assist</div></div>
       </div>
+      <div class="display">
+        <div id="expression" class="expression"></div>
+        <div id="result" class="result">0</div>
+        <div id="aiSuggestion" class="ai-suggestion"><div id="aiText"></div><div class="key-hint">Tab to accept</div></div>
+      </div>
+      <div class="keypad">
+        <button class="btn btn-ac" data-action="clear">AC</button>
+        <button class="btn btn-ghost" data-action="backspace">⌫</button>
+        <button class="btn btn-ghost" data-value="(">(</button>
+        <button class="btn btn-operator" data-value="/">÷</button>
+        <button class="btn" data-value="7">7</button><button class="btn" data-value="8">8</button><button class="btn" data-value="9">9</button>
+        <button class="btn btn-operator" data-value="*">×</button>
+        <button class="btn" data-value="4">4</button><button class="btn" data-value="5">5</button><button class="btn" data-value="6">6</button>
+        <button class="btn btn-operator" data-value="-">−</button>
+        <button class="btn" data-value="1">1</button><button class="btn" data-value="2">2</button><button class="btn" data-value="3">3</button>
+        <button class="btn btn-operator" data-value="+">+</button>
+        <button class="btn btn-ghost" data-value="%">%</button>
+        <button class="btn" data-value="0">0</button>
+        <button class="btn" data-value=".">.</button>
+        <button class="btn btn-equal" data-action="equals">=</button>
+        <button class="btn btn-ghost" data-value="ans">ans</button>
+        <button class="btn btn-ghost" data-value="+-">+/-</button>
+        <button class="btn btn-ghost" data-value="it">it</button>
+        <button class="btn btn-ghost" data-value=")">)</button>
+      </div>
+      <div id="calcHistory" class="history" style="max-height:140px; margin-top:12px;"></div>
     </div>
-    <div class="key-grid">
-      <button class="key ac-key" data-cmd="ac">AC</button>
-      <button class="key" data-cmd="back">⌫</button>
-      <button class="key" data-val="(">(</button>
-      <button class="key op-key" data-val="/">÷</button>
-      <button class="key" data-val="7">7</button>
-      <button class="key" data-val="8">8</button>
-      <button class="key" data-val="9">9</button>
-      <button class="key op-key" data-val="*">×</button>
-      <button class="key" data-val="4">4</button>
-      <button class="key" data-val="5">5</button>
-      <button class="key" data-val="6">6</button>
-      <button class="key op-key" data-val="-">−</button>
-      <button class="key" data-val="1">1</button>
-      <button class="key" data-val="2">2</button>
-      <button class="key" data-val="3">3</button>
-      <button class="key op-key" data-val="+">+</button>
-      <button class="key" data-val="%">%</button>
-      <button class="key" data-val="0">0</button>
-      <button class="key" data-val=".">.</button>
-      <button class="key eq-key" data-cmd="equal">=</button>
-      <button class="key" data-val="ans">ans</button>
-      <button class="key" data-cmd="pm">+/−</button>
-      <button class="key" data-val=")">)</button>
-      <button class="key" data-val="it">it</button>
+
+    <!-- AI Panel -->
+    <div class="panel">
+      <h3>🧠 Advanced AI Math Professor</h3>
+      <div class="algebra-input">
+        <input id="algebraInput" type="text" placeholder="Ask anything: 'what is the first prime number?', 'median of 5,9,12', 'triangle base 8 height 5', 'solve 2x+3=7', 'is 97 prime?', '10th prime'" />
+        <button id="solveAlgebraBtn">Ask AI → Auto-Solve</button>
+      </div>
+      <div id="algebraOutput" class="algebra-output">✨ Ask any math question — I auto-detect median, prime numbers, triangle area, equations, nth prime, and more!</div>
+      <div id="suggestions" class="suggestions"></div>
+      <div id="history" class="history"></div>
     </div>
-    <div class="history-list" id="calcHistoryList"></div>
-    <div style="font-size:0.65rem; text-align:right; margin-top:8px; color:#4b5563;">AC clears memory & history</div>
   </div>
 
-  <!-- Right panel: Teacher AI that auto-solves ANY question without rephrasing -->
-  <div class="teacher-panel">
-    <div class="teacher-header">
-      <h3 style="color:#e0f2fe;">🎓 Professor AI · Auto‑Solve</h3>
-      <span style="background:#0f172a; padding:2px 10px; border-radius:50px; font-size:0.7rem; color:#a5f3fc;">understands any wording</span>
-    </div>
-    <div class="query-area">
-      <input type="text" id="teacherInput" placeholder="Ask naturally: 'find median of 23, 45, 12', 'triangle with base 6 and height 9 area', 'solve 2x+5=15', 'what is the 10th prime', 'check if 97 prime', 'area of triangle sides 3,4,5'" autocomplete="off">
-      <button id="autoSolveBtn" class="solve-btn">✨ Auto‑Solve</button>
-    </div>
-    <div class="quick-suggestions" id="quickChips"></div>
-    <div id="teacherAnswer" class="teacher-answer">
-      💡 Ask me anything — I'll detect median, area, equations, primes, nth prime, arithmetic, and more. No need to rephrase!
-    </div>
-    <div id="stepByStep" class="step-detail"></div>
-    <hr>
-    <div style="font-size:0.8rem; color:#94a3b8;">📚 Recent conversations (click to reuse)</div>
-    <div id="conversationHistory" class="history-qa"></div>
-  </div>
-</div>
+  <script>
+    // ======================== CALCULATOR MODULE ========================
+    let expression = "";
+    let lastAns = 0;
+    let calcHistoryList = [];
+    let pendingFix = "";
 
-<script>
-  // -------------------- CALCULATOR MODULE (with AI suggestion & ans) --------------------
-  let currentExpr = "";
-  let lastAnsValue = 0;
-  let calcHistoryArr = [];
-  let pendingFixedExpr = "";
+    const expressionEl = document.getElementById("expression");
+    const resultEl = document.getElementById("result");
+    const aiSuggestionEl = document.getElementById("aiSuggestion");
+    const aiTextEl = document.getElementById("aiText");
+    const calcHistoryContainer = document.getElementById("calcHistory");
 
-  const exprDiv = document.getElementById("calcExpr");
-  const resDiv = document.getElementById("calcRes");
-  const hintDiv = document.getElementById("calcHint");
-  const hintSpan = document.getElementById("hintText");
-  const calcHistoryDiv = document.getElementById("calcHistoryList");
+    function escapeHtml(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+    function formatNumber(n) { if (!isFinite(n)) return String(n); if (Math.abs(n - Math.round(n)) < 1e-12) return String(Math.round(n)); return String(Number(n.toFixed(10))).replace(/\.?0+$/, ""); }
 
-  function formatNum(n) {
-    if (!isFinite(n)) return String(n);
-    if (Math.abs(n - Math.round(n)) < 1e-12) return String(Math.round(n));
-    let v = Number(n.toFixed(10));
-    return String(v).replace(/\.?0+$/, "");
-  }
-
-  function evalSecure(exp) {
-    let s = exp.replace(/÷/g, "/").replace(/×/g, "*").replace(/−/g, "-");
-    s = s.replace(/(\d)\(/g, "$1*(").replace(/\)(\d)/g, ")*$1");
-    s = s.replace(/\bans\b/gi, `(${lastAnsValue})`).replace(/\bit\b/gi, `(${lastAnsValue})`);
-    s = s.replace(/[^0-9+\-*/%.()]/g, "");
-    if (!s.trim()) return "";
-    try { let v = Function('"use strict"; return (' + s + ')')(); return (typeof v === "number" && isFinite(v)) ? v : ""; }
-    catch(e) { return ""; }
-  }
-
-  function balanceParen(s) {
-    let open = 0;
-    for(let ch of s) { if(ch === '(') open++; if(ch === ')') open--; }
-    if(open > 0) s += ')'.repeat(open);
-    return s;
-  }
-
-  function autoCorrectExpr(raw) {
-    let fixed = raw.replace(/÷/g,"/").replace(/×/g,"*").replace(/−/g,"-");
-    fixed = fixed.replace(/(\d)(\()/g,"$1*(").replace(/\)(\d)/g,")*$1");
-    fixed = balanceParen(fixed);
-    let testVal = evalSecure(fixed);
-    if(fixed !== raw && raw.trim()) return { fixed, suggestion: `✏️ corrected: ${fixed}`, valid: testVal !== "" };
-    else if(testVal !== "" && raw.trim()) return { fixed, suggestion: `🔍 preview = ${formatNum(testVal)}`, valid: true };
-    return { fixed, suggestion: "", valid: false };
-  }
-
-  function updateCalc() {
-    exprDiv.textContent = currentExpr || " ";
-    let val = evalSecure(currentExpr);
-    resDiv.textContent = val === "" ? "0" : formatNum(val);
-    let corr = autoCorrectExpr(currentExpr);
-    pendingFixedExpr = corr.fixed;
-    if(corr.suggestion) {
-      hintSpan.textContent = corr.suggestion;
-      hintDiv.style.opacity = "1";
-      hintDiv.style.visibility = "visible";
-    } else { hintDiv.style.opacity = "0"; hintDiv.style.visibility = "hidden"; }
-  }
-
-  function addHistory(exprStr, resultNum) {
-    let resStr = formatNum(resultNum);
-    if(calcHistoryArr[0] && calcHistoryArr[0].expr === exprStr && calcHistoryArr[0].result === resStr) return;
-    calcHistoryArr.unshift({ expr: exprStr, result: resStr });
-    if(calcHistoryArr.length > 50) calcHistoryArr.pop();
-    renderCalcHistory();
-  }
-
-  function renderCalcHistory() {
-    calcHistoryDiv.innerHTML = "";
-    for(let item of calcHistoryArr.slice(0,30)) {
-      let div = document.createElement("div");
-      div.className = "history-entry";
-      div.innerHTML = `<span style="flex:1; overflow:hidden;">${escapeHtml(item.expr)}</span><span style="color:#86efac;">= ${escapeHtml(item.result)}</span>`;
-      div.onclick = () => { currentExpr = item.expr; updateCalc(); };
-      calcHistoryDiv.appendChild(div);
+    function safeEval(expr) {
+      let s = expr.replace(/÷/g, "/").replace(/×/g, "*").replace(/−/g, "-");
+      s = s.replace(/(\d)\(/g, "$1*(").replace(/\)(\d)/g, ")*$1");
+      s = s.replace(/\bans\b/gi, `(${lastAns})`).replace(/\bit\b/gi, `(${lastAns})`);
+      s = s.replace(/[^0-9+\-*/%.()]/g, "");
+      if (!s.trim()) return "";
+      try { let v = Function('"use strict"; return (' + s + ')')(); return (typeof v === "number" && isFinite(v)) ? v : ""; } catch(e) { return ""; }
     }
-  }
 
-  function evaluateFinal() {
-    let finalExpr = (pendingFixedExpr && pendingFixedExpr !== currentExpr) ? pendingFixedExpr : currentExpr;
-    if(!finalExpr.trim()) return;
-    let v = evalSecure(finalExpr);
-    if(v !== "") {
-      lastAnsValue = v;
-      addHistory(finalExpr, v);
-      currentExpr = formatNum(v);
-      updateCalc();
-    } else { resDiv.textContent = "Error"; }
-  }
+    function balanceParen(str) { let o = 0; for(let ch of str) { if(ch === '(') o++; if(ch === ')') o--; } if(o > 0) str += ')'.repeat(o); return str; }
 
-  function clearAll() {
-    currentExpr = "";
-    lastAnsValue = 0;
-    calcHistoryArr = [];
-    renderCalcHistory();
-    updateCalc();
-  }
-
-  function backspaceCalc() { currentExpr = currentExpr.slice(0,-1); updateCalc(); }
-  function handleCalcValue(v) {
-    if(v === "ans") { let last = currentExpr.slice(-1); if(last && /[\d\)]/i.test(last)) currentExpr += "*"; currentExpr += "ans"; updateCalc(); return; }
-    if(v === "it") { let last = currentExpr.slice(-1); if(last && /[\d\)]/i.test(last)) currentExpr += "*"; currentExpr += "it"; updateCalc(); return; }
-    if(v === "+-") {
-      let match = currentExpr.match(/(.*?)([-+]?\d*\.?\d+|\bans\b|\bit\b)$/i);
-      if(match) {
-        let before = match[1]||"", token = match[2];
-        if(/^(ans|it)$/i.test(token)) currentExpr = before + "-" + token;
-        else { if(token.startsWith("-")) currentExpr = before + token.slice(1); else currentExpr = before + "-" + token; }
-      } else currentExpr += "-";
-      updateCalc(); return;
+    function aiAssist(expr) {
+      let fixed = expr.replace(/÷/g, "/").replace(/×/g, "*").replace(/−/g, "-");
+      fixed = fixed.replace(/(\d)\(/g, "$1*(").replace(/\)(\d)/g, ")*$1");
+      fixed = balanceParen(fixed);
+      let preview = safeEval(fixed);
+      let suggestionText = "";
+      if (fixed !== expr && expr.trim()) suggestionText = `Did you mean: ${fixed}`;
+      else if (preview !== "" && expr.trim()) suggestionText = `Preview: ${formatNumber(preview)}`;
+      return { fixed, suggestionText, preview };
     }
-    if(v === "(") { let last = currentExpr.slice(-1); if(last && /[\d\)a-z]/i.test(last)) currentExpr += "*"; currentExpr += "("; updateCalc(); return; }
-    if(v === ")") { currentExpr += ")"; updateCalc(); return; }
-    if(v === ".") { let lastNum = currentExpr.match(/(\d*\.?\d+)$/); if(lastNum && lastNum[0].includes(".")) return; currentExpr += "."; updateCalc(); return; }
-    if(["+","-","*","/","%"].includes(v)) {
-      let last = currentExpr.slice(-1);
-      if(v === "-" && (currentExpr === "" || last === "" || "+-*/%(".includes(last))) { currentExpr += "-"; updateCalc(); return; }
-      if("+-*/%".includes(last)) currentExpr = currentExpr.slice(0,-1) + v;
-      else currentExpr += v;
-      updateCalc(); return;
-    }
-    currentExpr += v;
-    updateCalc();
-  }
 
-  document.querySelectorAll(".key").forEach(btn => {
-    btn.addEventListener("click", () => {
-      let val = btn.getAttribute("data-val");
-      let cmd = btn.getAttribute("data-cmd");
-      if(val) handleCalcValue(val);
-      else if(cmd === "ac") clearAll();
-      else if(cmd === "back") backspaceCalc();
-      else if(cmd === "equal") evaluateFinal();
-      else if(cmd === "pm") handleCalcValue("+-");
+    function updateDisplay() {
+      expressionEl.textContent = expression || "";
+      let val = safeEval(expression);
+      resultEl.textContent = val === "" ? "0" : formatNumber(val);
+      let { fixed, suggestionText } = aiAssist(expression);
+      pendingFix = fixed;
+      if (suggestionText) { aiTextEl.textContent = suggestionText; aiSuggestionEl.classList.add("visible"); }
+      else { aiSuggestionEl.classList.remove("visible"); }
+    }
+
+    function addToHistory(exprStr, res) { calcHistoryList.unshift({ expr: exprStr, result: formatNumber(res) }); if(calcHistoryList.length > 50) calcHistoryList.pop(); renderCalcHistory(); }
+    function renderCalcHistory() {
+      calcHistoryContainer.innerHTML = "";
+      for(let item of calcHistoryList.slice(0, 30)) {
+        let div = document.createElement("div"); div.className = "history-item";
+        div.innerHTML = `<div style="flex:1">${escapeHtml(item.expr)}</div><div style="color:#a5b4fc">= ${escapeHtml(item.result)}</div>`;
+        div.onclick = () => { expression = item.expr; updateDisplay(); };
+        calcHistoryContainer.appendChild(div);
+      }
+    }
+
+    function appendValue(v) {
+      if (v === "ans" || v === "it") { let last = expression.slice(-1); if(last && /[\d\)]/i.test(last)) expression += "*"; expression += v; updateDisplay(); return; }
+      if (v === "+-") { let match = expression.match(/(.*?)([-+]?\d*\.?\d+|\bans\b|\bit\b)$/i); if(match) { let before = match[1]||"", token = match[2]; if(/^(ans|it)$/i.test(token)) expression = before + "-" + token; else { if(token.startsWith("-")) expression = before + token.slice(1); else expression = before + "-" + token; } } else expression += "-"; updateDisplay(); return; }
+      if (v === "(") { let last = expression.slice(-1); if(last && /[\d\)a-z]/i.test(last)) expression += "*"; expression += "("; updateDisplay(); return; }
+      if (v === ")") { expression += ")"; updateDisplay(); return; }
+      if (v === ".") { let lastNum = expression.match(/(\d*\.?\d+)$/); if(lastNum && lastNum[0].includes(".")) return; expression += "."; updateDisplay(); return; }
+      if (["+","-","*","/","%"].includes(v)) { let last = expression.slice(-1); if(v === "-" && (expression === "" || last === "" || "+-*/%(".includes(last))) { expression += "-"; updateDisplay(); return; } if("+-*/%".includes(last)) expression = expression.slice(0,-1) + v; else expression += v; updateDisplay(); return; }
+      expression += v; updateDisplay();
+    }
+
+    function clearAll() { expression = ""; lastAns = 0; calcHistoryList = []; renderCalcHistory(); updateDisplay(); }
+    function backspace() { expression = expression.slice(0,-1); updateDisplay(); }
+    function equals() { let fixed = aiAssist(expression).fixed; let v = safeEval(fixed); if(v !== "") { lastAns = v; addToHistory(fixed, v); expression = formatNumber(v); updateDisplay(); } }
+
+    document.querySelectorAll(".btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        let val = btn.getAttribute("data-value");
+        let action = btn.getAttribute("data-action");
+        if(val) appendValue(val);
+        else if(action === "clear") clearAll();
+        else if(action === "backspace") backspace();
+        else if(action === "equals") equals();
+      });
     });
-  });
-  document.addEventListener("keydown", (e) => {
-    if(e.key >= "0" && e.key <= "9") handleCalcValue(e.key);
-    else if(["+","-","*","/","%"].includes(e.key)) handleCalcValue(e.key);
-    else if(e.key === ".") handleCalcValue(".");
-    else if(e.key === "(") handleCalcValue("(");
-    else if(e.key === ")") handleCalcValue(")");
-    else if(e.key === "Enter") { e.preventDefault(); evaluateFinal(); }
-    else if(e.key === "Backspace") backspaceCalc();
-    else if(e.key === "Tab") { e.preventDefault(); if(pendingFixedExpr && pendingFixedExpr !== currentExpr) { currentExpr = pendingFixedExpr; updateCalc(); } }
-    else if(e.key === "Delete" && (e.ctrlKey || e.metaKey)) clearAll();
-  });
-  updateCalc(); renderCalcHistory();
+    document.addEventListener("keydown", (e) => {
+      if(e.key >= "0" && e.key <= "9") appendValue(e.key);
+      else if(["+","-","*","/","%"].includes(e.key)) appendValue(e.key);
+      else if(e.key === ".") appendValue(".");
+      else if(e.key === "(") appendValue("(");
+      else if(e.key === ")") appendValue(")");
+      else if(e.key === "Enter") { e.preventDefault(); equals(); }
+      else if(e.key === "Backspace") backspace();
+      else if(e.key === "Tab") { e.preventDefault(); if(pendingFix && pendingFix !== expression) { expression = pendingFix; updateDisplay(); } }
+    });
+    updateDisplay(); renderCalcHistory();
 
-  // -------------------- AUTO-SOLVE TEACHER (understands any wording, median, area, primes, equations, nth prime) --------------------
-  const teacherInput = document.getElementById("teacherInput");
-  const autoSolveBtn = document.getElementById("autoSolveBtn");
-  const teacherAnswerDiv = document.getElementById("teacherAnswer");
-  const stepDetailDiv = document.getElementById("stepByStep");
-  const conversationHistoryDiv = document.getElementById("conversationHistory");
-  let convHistory = [];
+    // ======================== ADVANCED AI - AUTO SOLVE ANYTHING ========================
+    const algebraInput = document.getElementById("algebraInput");
+    const solveBtn = document.getElementById("solveAlgebraBtn");
+    const algebraOutput = document.getElementById("algebraOutput");
+    const suggestionsDiv = document.getElementById("suggestions");
+    const historyDiv = document.getElementById("history");
+    let aiHistory = [];
 
-  function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m){ return m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'; }); }
+    // Primality & nth prime (fast & accurate)
+    function isPrime(n) {
+      if (n < 2) return false;
+      if (n === 2) return true;
+      if (n % 2 === 0) return false;
+      let limit = Math.sqrt(n);
+      for (let i = 3; i <= limit; i += 2) if (n % i === 0) return false;
+      return true;
+    }
 
-  // universal intent parser: median, triangle area, linear equations, primes, nth prime, arithmetic
-  function parseUniversalIntent(raw) {
-    const text = raw.toLowerCase();
-    // 1) Median: "median of 10,20,30" , "find median 5 9 12" , "what's the median of 2,8,7"
-    let medianMatch = text.match(/(?:median|middle value)\s*(?:of|:)?\s*([\d\s,]+)/i);
-    if(medianMatch || text.includes("median")) {
-      let numbers = extractNumbers(raw);
-      if(numbers.length > 0) return { type: "median", data: numbers, intent: "median" };
+    function nthPrime(n) {
+      if (n < 1) return null;
+      let count = 0, candidate = 1;
+      while (count < n) { candidate++; if (isPrime(candidate)) count++; }
+      return candidate;
     }
-    // 2) Triangle area: base+height, sides, coordinates
-    let areaTriangle = detectTriangle(raw);
-    if(areaTriangle) return { type: "triangle", data: areaTriangle, intent: "triangle" };
-    // 3) Linear equation: contains = and x
-    if(text.includes("=") && /[=]/.test(text) && /x/.test(text)) {
-      let eqResult = solveLinearEquation(raw);
-      if(eqResult && !eqResult.includes("invalid")) return { type: "equation", data: eqResult, intent: "equation" };
-    }
-    // 4) Prime check: "is 97 prime", "prime? 31", "97 prime"
-    let primeMatch = text.match(/(?:is|check)?\s*(\d{1,6})\s*(?:prime|prime\?)/i);
-    if(primeMatch) {
-      let n = parseInt(primeMatch[1]);
-      if(!isNaN(n)) return { type: "prime", data: n, intent: "primeCheck" };
-    }
-    // 5) nth prime: "10th prime", "find 7th prime", "what is the 15th prime"
-    let nthMatch = text.match(/(\d{1,3})(?:st|nd|rd|th)\s*prime/i) || text.match(/nth\s*prime\s*(\d+)/i) || text.match(/prime\s*#\s*(\d+)/i);
-    if(nthMatch) {
-      let idx = parseInt(nthMatch[1]);
-      if(idx > 0 && idx < 500) return { type: "nthprime", data: idx, intent: "nthPrime" };
-    }
-    // 6) Arithmetic expression: evaluate any math with numbers
-    let arithmeticExpr = raw.replace(/[^0-9+\-*/%.()]/g, "");
-    if(arithmeticExpr && /[\d+\-*/]/.test(arithmeticExpr)) {
-      try {
-        let ev = Function('"use strict"; return (' + arithmeticExpr + ')')();
-        if(isFinite(ev)) return { type: "arithmetic", data: formatNum(ev), rawExpr: arithmeticExpr, intent: "arithmetic" };
-      } catch(e) {}
-    }
-    return null;
-  }
 
-  function extractNumbers(str) { let arr = []; str.replace(/-?\d+(\.\d+)?/g, m => arr.push(Number(m))); return arr; }
+    // Median
+    function median(nums) { let sorted = [...nums].sort((a,b)=>a-b); let mid = Math.floor(sorted.length/2); return sorted.length % 2 === 0 ? (sorted[mid-1] + sorted[mid])/2 : sorted[mid]; }
 
-  function detectTriangle(str) {
-    let lower = str.toLowerCase();
-    let nums = extractNumbers(str);
-    // base & height explicit
-    if((lower.includes("base") && lower.includes("height")) && nums.length >= 2) {
-      return { mode: "base-height", b: nums[0], h: nums[1] };
+    // Triangle area: base/height, sides, coordinates
+    function triangleAreaFromParams(params) {
+      if (params.mode === "base-height") return { area: 0.5 * params.b * params.h, steps: `Area = ½ × ${params.b} × ${params.h} = ${formatNumber(0.5 * params.b * params.h)}` };
+      if (params.mode === "sides") { let [a,b,c] = [params.a, params.b, params.c]; let s = (a+b+c)/2; let area = Math.sqrt(Math.max(0, s*(s-a)*(s-b)*(s-c))); return { area, steps: `Heron: s = (${a}+${b}+${c})/2 = ${s}<br>Area = √[s(s-a)(s-b)(s-c)] = ${formatNumber(area)}` }; }
+      if (params.mode === "coords") { let [[x1,y1],[x2,y2],[x3,y3]] = params.coords; let area = 0.5 * Math.abs(x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2)); return { area, steps: `Shoelace: ½| x1(y2-y3) + x2(y3-y1) + x3(y1-y2) | = ${formatNumber(area)}` }; }
+      return null;
     }
-    // three sides
-    if(nums.length >= 3 && (lower.includes("side") || lower.includes("sides") || /(\d+[ ,]+\d+[ ,]+\d+)/.test(str))) {
-      return { mode: "sides", a: nums[0], b: nums[1], c: nums[2] };
-    }
-    // coordinates pattern (x1,y1),(x2,y2),(x3,y3)
-    let coordMatch = str.match(/\((\-?\d+\.?\d*)\s*,\s*(\-?\d+\.?\d*)\)\s*[,;]\s*\((\-?\d+\.?\d*)\s*,\s*(\-?\d+\.?\d*)\)\s*[,;]\s*\((\-?\d+\.?\d*)\s*,\s*(\-?\d+\.?\d*)\)/);
-    if(coordMatch) {
-      let coords = [[Number(coordMatch[1]), Number(coordMatch[2])], [Number(coordMatch[3]), Number(coordMatch[4])], [Number(coordMatch[5]), Number(coordMatch[6])]];
-      return { mode: "coords", coords };
-    }
-    return null;
-  }
 
-  function solveTriangleArea(tri) {
-    if(tri.mode === "base-height") {
-      let area = 0.5 * tri.b * tri.h;
-      return { result: area, steps: `Area = ½ × base × height = ½ × ${tri.b} × ${tri.h} = ${formatNum(area)}` };
-    } else if(tri.mode === "sides") {
-      let a=tri.a, b=tri.b, c=tri.c;
-      let s = (a+b+c)/2;
-      let area = Math.sqrt(Math.max(0, s*(s-a)*(s-b)*(s-c)));
-      return { result: area, steps: `Heron's formula: s = (${a}+${b}+${c})/2 = ${s}<br>Area = √[s(s-a)(s-b)(s-c)] = ${formatNum(area)}` };
-    } else if(tri.mode === "coords") {
-      let [[x1,y1],[x2,y2],[x3,y3]] = tri.coords;
-      let area = 0.5 * Math.abs(x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2));
-      return { result: area, steps: `Shoelace formula: ½| x1(y2-y3) + x2(y3-y1) + x3(y1-y2) | = ${formatNum(area)}` };
+    // Linear equation solver
+    function solveLinear(equation) {
+      let eq = equation.replace(/\s/g, "");
+      let sides = eq.split("=");
+      if (sides.length !== 2) return null;
+      let left = sides[0], right = sides[1];
+      function evalWithX(expr, xVal) { let repl = expr.replace(/x/gi, `(${xVal})`); try { return Function('"use strict"; return (' + repl + ')')(); } catch(e) { return NaN; } }
+      let f0 = evalWithX(left, 0) - evalWithX(right, 0);
+      let f1 = evalWithX(left, 1) - evalWithX(right, 1);
+      let a = f1 - f0, b = f0;
+      if (Math.abs(a) < 1e-9) return (Math.abs(b) < 1e-9) ? { solution: "All real numbers", steps: "Identity" } : { solution: "No solution", steps: "Contradiction" };
+      let sol = -b / a;
+      return { solution: sol, steps: `Simplify: ${formatNumber(a)}x + ${formatNumber(b)} = 0 → x = ${formatNumber(sol)}` };
     }
-    return null;
-  }
 
-  function solveLinearEquation(str) {
-    let eq = str.replace(/\s/g, "");
-    let sides = eq.split("=");
-    if(sides.length !== 2) return null;
-    let left = sides[0], right = sides[1];
-    function evalWithX(expr, xVal) {
-      let repl = expr.replace(/x/gi, `(${xVal})`);
-      try { return Function('"use strict"; return ('+repl+')')(); } catch(e) { return NaN; }
+    // Universal intent parser (robust for any wording)
+    function parseIntent(raw) {
+      let text = raw.toLowerCase();
+      // 1) FIRST PRIME specifically
+      if (text.includes("first prime") || (text.includes("1st prime") || (text.includes("prime number") && text.includes("first")))) {
+        return { type: "nthprime", data: 1, answer: `The first prime number is 2.`, steps: "Prime numbers start from 2,3,5,7... 2 is the smallest and first prime." };
+      }
+      // 2) nth prime detection
+      let nthMatch = text.match(/(\d{1,3})(?:st|nd|rd|th)\s*prime/i) || text.match(/prime\s*#\s*(\d+)/i) || text.match(/the\s*(\d+)(?:st|nd|rd|th)?\s*prime/i);
+      if (nthMatch) { let idx = parseInt(nthMatch[1]); if(idx > 0 && idx < 500) return { type: "nthprime", data: idx }; }
+      
+      // 3) Prime check
+      let primeCheck = text.match(/is\s*(\d+)\s*prime/i) || text.match(/(\d+)\s*prime\??/i);
+      if (primeCheck && !text.includes("th prime")) { let n = parseInt(primeCheck[1]); return { type: "primecheck", data: n }; }
+      
+      // 4) Median
+      let medianMatch = text.match(/median\s*(?:of)?\s*([\d\s,]+)/i);
+      if (medianMatch || text.includes("median")) { let nums = extractNumbers(raw); if(nums.length) return { type: "median", data: nums }; }
+      
+      // 5) Triangle area
+      let triangle = detectTriangle(raw);
+      if (triangle) return { type: "triangle", data: triangle };
+      
+      // 6) Linear equation with x
+      if (text.includes("=") && text.includes("x")) { let eqRes = solveLinear(raw); if(eqRes) return { type: "equation", data: eqRes }; }
+      
+      // 7) Arithmetic fallback
+      let arith = raw.replace(/[^0-9+\-*/%.()]/g, "");
+      if (arith && /[\d+\-*/]/.test(arith)) { try { let ev = Function('"use strict"; return (' + arith + ')')(); if(isFinite(ev)) return { type: "arithmetic", data: ev, expr: arith }; } catch(e) {} }
+      
+      return null;
     }
-    let f0 = evalWithX(left,0) - evalWithX(right,0);
-    let f1 = evalWithX(left,1) - evalWithX(right,1);
-    let a = f1 - f0, b = f0;
-    if(Math.abs(a) < 1e-9) return (Math.abs(b) < 1e-9) ? "Infinite solutions (identity)" : "No solution";
-    let sol = -b/a;
-    return { solution: sol, steps: `Simplify to ${formatNum(a)}x + ${formatNum(b)} = 0 → x = ${formatNum(sol)}` };
-  }
 
-  function isPrimeNum(n) { if(n<2) return false; if(n===2) return true; if(n%2===0) return false; let lim=Math.sqrt(n); for(let i=3;i<=lim;i+=2) if(n%i===0) return false; return true; }
-  function nthPrimeFinder(n) { let cnt=0, cand=1; while(cnt < n) { cand++; if(isPrimeNum(cand)) cnt++; } return cand; }
+    function extractNumbers(str) { let nums = []; str.replace(/-?\d+(\.\d+)?/g, m => nums.push(Number(m))); return nums; }
 
-  function processAutoSolve(rawInput) {
-    if(!rawInput.trim()) return { answer: "Please type a math question (median, triangle area, equation, prime, etc.)", steps: "" };
-    let intent = parseUniversalIntent(rawInput);
-    if(!intent) return { answer: "🤔 I couldn't detect the math problem. Try: 'median 2,8,15', 'triangle base 7 height 4', 'solve 3x+2=11', 'is 97 prime?', '10th prime'", steps: "" };
+    function detectTriangle(str) {
+      let lower = str.toLowerCase();
+      let nums = extractNumbers(str);
+      if ((lower.includes("base") && lower.includes("height")) && nums.length >= 2) return { mode: "base-height", b: nums[0], h: nums[1] };
+      if ((lower.includes("side") || lower.includes("sides")) && nums.length >= 3) return { mode: "sides", a: nums[0], b: nums[1], c: nums[2] };
+      let coordMatch = str.match(/\((\-?\d+\.?\d*)\s*,\s*(\-?\d+\.?\d*)\)\s*[,;]\s*\((\-?\d+\.?\d*)\s*,\s*(\-?\d+\.?\d*)\)\s*[,;]\s*\((\-?\d+\.?\d*)\s*,\s*(\-?\d+\.?\d*)\)/);
+      if (coordMatch) { let coords = [[Number(coordMatch[1]), Number(coordMatch[2])], [Number(coordMatch[3]), Number(coordMatch[4])], [Number(coordMatch[5]), Number(coordMatch[6])]]; return { mode: "coords", coords }; }
+      if (nums.length >= 3) return { mode: "sides", a: nums[0], b: nums[1], c: nums[2] };
+      return null;
+    }
+
+    function processQuestion(raw) {
+      let intent = parseIntent(raw);
+      if (!intent) return { answer: "❓ I couldn't interpret that. Try: 'first prime', 'median 4,8,15', 'triangle base 6 height 10', 'solve 2x+3=11', 'is 97 prime?', '7th prime'", steps: "" };
+      
+      if (intent.type === "nthprime") {
+        let idx = intent.data;
+        let p = nthPrime(idx);
+        return { answer: `🔢 The ${idx}${idx===1?"st":idx===2?"nd":idx===3?"rd":"th"} prime number is **${p}**.`, steps: `Primes: 2,3,5,7,11... position ${idx} = ${p}` };
+      }
+      if (intent.type === "primecheck") {
+        let n = intent.data;
+        let primeFlag = isPrime(n);
+        return { answer: `${n} is ${primeFlag ? "✅ PRIME" : "❌ NOT prime (composite or <2)"}`, steps: primeFlag ? `No divisors other than 1 and ${n}.` : `Divisible by a factor.` };
+      }
+      if (intent.type === "median") {
+        let med = median(intent.data);
+        let sorted = [...intent.data].sort((a,b)=>a-b);
+        return { answer: `📊 Median = ${formatNumber(med)}`, steps: `Data: ${intent.data.join(", ")} → sorted: ${sorted.join(", ")} → median = ${formatNumber(med)}` };
+      }
+      if (intent.type === "triangle") {
+        let areaRes = triangleAreaFromParams(intent.data);
+        if (areaRes) return { answer: `📐 Triangle Area = ${formatNumber(areaRes.area)}`, steps: areaRes.steps };
+        return { answer: "Triangle area computed", steps: "Check parameters" };
+      }
+      if (intent.type === "equation") {
+        let eq = intent.data;
+        if (typeof eq.solution === "number") return { answer: `✅ Solution: x = ${formatNumber(eq.solution)}`, steps: eq.steps };
+        return { answer: eq.solution, steps: eq.steps };
+      }
+      if (intent.type === "arithmetic") {
+        return { answer: `🧮 Result = ${formatNumber(intent.data)}`, steps: `Evaluated: ${intent.expr || raw}` };
+      }
+      return { answer: "Try rephrasing (examples above)", steps: "" };
+    }
+
+    function addToAIHistory(q, a) { aiHistory.unshift({ q, a: a.slice(0, 100) }); if(aiHistory.length > 30) aiHistory.pop(); renderAIHistory(); }
+    function renderAIHistory() {
+      historyDiv.innerHTML = "";
+      for(let item of aiHistory.slice(0, 20)) {
+        let div = document.createElement("div"); div.className = "history-item";
+        div.innerHTML = `<div style="flex:1; overflow:hidden;">${escapeHtml(item.q)}</div><div style="color:#86efac;">→ ${escapeHtml(item.a)}</div>`;
+        div.onclick = () => { algebraInput.value = item.q; solveAlgebra(); };
+        historyDiv.appendChild(div);
+      }
+    }
+
+    function solveAlgebra() {
+      let query = algebraInput.value.trim();
+      if (!query) { algebraOutput.innerHTML = "⚠️ Please enter a math question."; return; }
+      let result = processQuestion(query);
+      let fullAnswer = `<strong>🎓 AI Professor:</strong> ${result.answer}`;
+      if (result.steps) fullAnswer += `<br><br><span style="color:#a5b4fc;">📖 ${result.steps}</span>`;
+      algebraOutput.innerHTML = fullAnswer;
+      addToAIHistory(query, result.answer);
+      suggestionsDiv.innerHTML = "";
+      // Update lastAns if numeric result
+      let numMatch = result.answer.match(/-?\d+(\.\d+)?/);
+      if (numMatch) lastAns = parseFloat(numMatch[0]);
+    }
+
+    solveBtn.addEventListener("click", solveAlgebra);
+    algebraInput.addEventListener("keypress", (e) => { if(e.key === "Enter") solveAlgebra(); });
     
-    if(intent.type === "median") {
-      let medianVal = solveMedian(intent.data);
-      let steps = `Numbers: ${intent.data.join(", ")} → sorted: ${[...intent.data].sort((a,b)=>a-b).join(", ")} → median = ${formatNum(medianVal)}`;
-      return { answer: `📊 Median = ${formatNum(medianVal)}`, steps: steps };
-    }
-    else if(intent.type === "triangle") {
-      let areaRes = solveTriangleArea(intent.data);
-      if(areaRes) return { answer: `📐 Triangle Area = ${formatNum(areaRes.result)}`, steps: areaRes.steps };
-      return { answer: "Triangle area computed", steps: "Check base/height or sides/coordinates." };
-    }
-    else if(intent.type === "equation") {
-      let eqRes = intent.data;
-      if(typeof eqRes === "object") return { answer: `✅ Solution: x = ${formatNum(eqRes.solution)}`, steps: eqRes.steps };
-      else return { answer: eqRes, steps: "Linear equation analysis complete." };
-    }
-    else if(intent.type === "prime") {
-      let primeFlag = isPrimeNum(intent.data);
-      return { answer: `${intent.data} is ${primeFlag ? "✅ PRIME" : "❌ NOT prime (composite or <2)"}`, steps: primeFlag ? "No divisors other than 1 and itself." : "Has a divisor other than 1." };
-    }
-    else if(intent.type === "nthprime") {
-      let p = nthPrimeFinder(intent.data);
-      return { answer: `🔢 The ${intent.data}th prime number is ${p}.`, steps: `Prime sequence up to index ${intent.data} computed.` };
-    }
-    else if(intent.type === "arithmetic") {
-      return { answer: `🧮 Result = ${intent.data}`, steps: `Evaluated: ${intent.rawExpr || rawInput}` };
-    }
-    return { answer: "Could not parse fully, please rephrase or use examples: 'median 4,7,9', 'triangle base 8 height 3'", steps: "" };
-  }
-
-  function solveMedian(nums) { let sorted = [...nums].sort((a,b)=>a-b); let mid = Math.floor(sorted.length/2); if(sorted.length%2===0) return (sorted[mid-1]+sorted[mid])/2; else return sorted[mid]; }
-
-  function renderAnswerWithHistory(raw, resultObj) {
-    teacherAnswerDiv.innerHTML = `<strong>🎓 Professor AI:</strong><br>${escapeHtml(resultObj.answer)}`;
-    stepDetailDiv.innerHTML = resultObj.steps ? `<strong>📖 Step-by-step:</strong><br>${resultObj.steps}` : "";
-    convHistory.unshift({ q: raw, a: resultObj.answer });
-    if(convHistory.length > 25) convHistory.pop();
-    let historyHtml = "";
-    for(let item of convHistory.slice(0,15)) {
-      historyHtml += `<div class="qa-row" data-q="${escapeHtml(item.q)}">📌 ${escapeHtml(item.q.slice(0,65))}<br><span style="color:#90f7ec;">→ ${escapeHtml(item.a.slice(0,70))}</span></div>`;
-    }
-    conversationHistoryDiv.innerHTML = historyHtml;
-    document.querySelectorAll(".qa-row").forEach(el => {
-      el.addEventListener("click", () => { teacherInput.value = el.getAttribute("data-q") || ""; autoSolve(); });
-    });
-    lastAnsValue = parseFloat(resultObj.answer.match(/-?\d+(\.\d+)?/)?.[0]) || lastAnsValue;
-  }
-
-  function autoSolve() {
-    let q = teacherInput.value.trim();
-    if(!q) { teacherAnswerDiv.innerHTML = "⚠️ Ask me a math question — I auto-detect median, triangle, equations, primes!"; stepDetailDiv.innerHTML = ""; return; }
-    let result = processAutoSolve(q);
-    renderAnswerWithHistory(q, result);
-  }
-
-  autoSolveBtn.addEventListener("click", autoSolve);
-  teacherInput.addEventListener("keypress", (e) => { if(e.key === "Enter") autoSolve(); });
-  
-  function generateQuickChips() {
-    const chips = ["median 12, 8, 20, 15", "triangle base 7 height 10", "area triangle sides 5,6,7", "solve 4x - 3 = 13", "is 131 prime", "7th prime", "area triangle (0,0),(4,0),(0,5)"];
-    const container = document.getElementById("quickChips");
-    container.innerHTML = "";
-    chips.forEach(ch => {
-      let span = document.createElement("span");
-      span.className = "suggest-chip";
-      span.innerText = ch;
-      span.onclick = () => { teacherInput.value = ch; autoSolve(); };
-      container.appendChild(span);
-    });
-  }
-  generateQuickChips();
-</script>
+    // Quick demonstration chips
+    const demoQueries = ["what is the first prime number", "median of 12, 7, 9, 15", "triangle base 8 height 5", "solve 4x - 2 = 10", "is 97 prime", "10th prime", "area triangle sides 3,4,5"];
+    setTimeout(() => {
+      let chipDiv = document.createElement("div"); chipDiv.style.marginTop = "12px"; chipDiv.style.display = "flex"; chipDiv.style.flexWrap = "wrap"; chipDiv.style.gap = "8px";
+      demoQueries.forEach(q => { let chip = document.createElement("span"); chip.style.background = "#1e293b"; chip.style.padding = "4px 12px"; chip.style.borderRadius = "20px"; chip.style.fontSize = "0.7rem"; chip.style.cursor = "pointer"; chip.textContent = q; chip.onclick = () => { algebraInput.value = q; solveAlgebra(); }; chipDiv.appendChild(chip); });
+      algebraOutput.parentNode.insertBefore(chipDiv, algebraOutput.nextSibling);
+    }, 100);
+  </script>
 </body>
 </html>
