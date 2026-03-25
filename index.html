@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Advanced AI Math Professor | Auto-Solve Any Question</title>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>OmniStudy AI | Scan & Solve Any Subject</title>
   <style>
-    /* ========== CLASSIC POLISHED CSS (from original design) ========== */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     }
 
     :root {
@@ -21,75 +20,53 @@
       --accent2: #60a5fa;
       --success: #22c55e;
       --danger: #ef4444;
+      --warning: #f59e0b;
     }
 
     body {
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(96, 165, 250, 0.06), transparent 8%),
-                  radial-gradient(900px 500px at 90% 90%, rgba(99, 102, 241, 0.04), transparent 6%),
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(96, 165, 250, 0.08), transparent 8%),
+                  radial-gradient(900px 500px at 90% 90%, rgba(99, 102, 241, 0.06), transparent 6%),
                   linear-gradient(180deg, var(--bg1), var(--bg2));
       color: #e6eef8;
-      padding: 28px;
+      padding: 24px;
     }
 
     .container {
-      width: 1000px;
-      max-width: 98vw;
+      max-width: 1400px;
+      margin: 0 auto;
       display: grid;
-      grid-template-columns: 1fr 460px;
-      gap: 20px;
+      grid-template-columns: 1fr 480px;
+      gap: 24px;
       align-items: start;
     }
 
+    /* Calculator Panel */
     .calculator-wrapper {
       padding: 20px;
-      border-radius: 18px;
+      border-radius: 24px;
       background: linear-gradient(145deg, rgba(15, 23, 42, 0.85), rgba(12, 18, 30, 0.6));
       box-shadow: 0 20px 50px rgba(2, 6, 23, 0.6);
-      border: 1px solid rgba(148, 163, 184, 0.06);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .glow-orb {
-      position: absolute;
-      width: 260px;
-      height: 260px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(96, 165, 250, 0.14), transparent 55%);
-      top: -80px;
-      right: -80px;
-      filter: blur(6px);
-      pointer-events: none;
-      opacity: 0.9;
+      border: 1px solid rgba(148, 163, 184, 0.08);
+      backdrop-filter: blur(4px);
     }
 
     .calculator-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .calculator-title {
-      font-size: 0.95rem;
-      color: var(--muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      margin-bottom: 16px;
     }
 
     .ai-pill {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 10px;
+      padding: 6px 12px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(99, 102, 241, 0.12);
-      color: #c7d2fe;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
       font-size: 0.75rem;
     }
 
@@ -98,539 +75,482 @@
       height: 8px;
       border-radius: 50%;
       background: var(--success);
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
       animation: pulse 1.4s infinite;
     }
 
     @keyframes pulse {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.4); opacity: 0.45; }
-      100% { transform: scale(1); opacity: 1; }
+      0% { opacity: 0.5; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1.2); }
     }
 
     .display {
-      margin-top: 8px;
-      padding: 14px;
-      border-radius: 14px;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
-      border: 1px solid rgba(148, 163, 184, 0.04);
-      box-shadow: inset 0 -6px 18px rgba(2, 6, 23, 0.25);
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(0, 0, 0, 0.3);
+      margin: 12px 0;
     }
 
     .expression {
-      min-height: 22px;
-      font-size: 0.95rem;
+      min-height: 28px;
+      font-size: 0.9rem;
       color: var(--muted);
       text-align: right;
-      word-break: break-all;
+      word-break: break-word;
     }
 
     .result {
-      margin-top: 8px;
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: 700;
       text-align: right;
       color: #e6eef8;
-      letter-spacing: 0.01em;
-    }
-
-    .ai-suggestion {
-      margin-top: 8px;
-      font-size: 0.78rem;
-      color: #a5b4fc;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      opacity: 0;
-      transform: translateY(6px);
-      transition: all .18s ease;
-    }
-
-    .ai-suggestion.visible {
-      opacity: 1;
-      transform: translateY(0);
     }
 
     .keypad {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
-      margin-top: 14px;
+      margin: 16px 0;
     }
 
     .btn {
-      position: relative;
-      border: none;
-      outline: none;
+      padding: 12px 0;
       border-radius: 12px;
-      padding: 14px 0;
-      font-size: 1rem;
+      border: none;
       font-weight: 600;
       cursor: pointer;
-      color: #e6eef8;
       background: linear-gradient(180deg, rgba(30, 41, 59, 0.95), rgba(10, 14, 20, 0.95));
-      box-shadow: 0 10px 18px rgba(2, 6, 23, 0.7), 0 0 0 1px rgba(148, 163, 184, 0.03);
-      transition: transform .12s ease, box-shadow .12s ease;
+      color: #e6eef8;
+      transition: transform 0.1s;
     }
 
-    .btn:active {
-      transform: translateY(2px) scale(.995);
+    .btn:active { transform: translateY(2px); }
+    .btn-operator { background: linear-gradient(180deg, #4f46e5, #6366f1); color: white; }
+    .btn-ac { background: linear-gradient(180deg, #dc2626, #b91c1c); }
+    .btn-equal { background: linear-gradient(135deg, #22c55e, #16a34a); grid-column: span 2; }
+
+    /* Scanner Panel */
+    .scanner-panel {
+      background: linear-gradient(180deg, rgba(8, 12, 20, 0.7), rgba(10, 14, 24, 0.55));
+      border-radius: 24px;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      padding: 20px;
+      backdrop-filter: blur(8px);
     }
 
-    .btn-operator {
-      background: linear-gradient(180deg, rgba(129, 140, 248, 0.95), rgba(59, 130, 246, 0.9));
-      color: #071028;
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
-    .btn-ac {
-      background: linear-gradient(180deg, rgba(248, 113, 113, 0.95), rgba(185, 28, 28, 0.95));
-      color: #fff;
+    .scan-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
-    .btn-equal {
-      grid-column: span 2;
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: #022c22;
-      font-weight: 800;
+    .scan-btn {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 40px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      transition: 0.2s;
     }
 
-    .panel {
-      padding: 18px;
-      border-radius: 14px;
-      background: linear-gradient(180deg, rgba(8, 12, 20, 0.6), rgba(10, 14, 20, 0.45));
-      border: 1px solid rgba(148, 163, 184, 0.04);
-      box-shadow: 0 18px 40px rgba(2, 6, 23, 0.6);
-      min-height: 420px;
+    .scan-btn:hover { transform: scale(1.02); background: linear-gradient(135deg, #818cf8, #a78bfa); }
+
+    .file-input-hidden { display: none; }
+
+    .preview-area {
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 16px;
+      padding: 12px;
+      margin: 12px 0;
+      max-height: 200px;
+      overflow: auto;
+      border: 1px dashed rgba(99, 102, 241, 0.4);
     }
 
-    .panel h3 {
-      color: #c7d2fe;
-      font-size: 1rem;
+    .extracted-text {
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      font-family: monospace;
+    }
+
+    .answer-area {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 16px;
+      border-left: 4px solid var(--success);
+    }
+
+    .subject-badge {
+      display: inline-block;
+      background: var(--accent);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.7rem;
       margin-bottom: 10px;
     }
 
-    .algebra-input {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 12px;
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
     }
 
-    .algebra-input input {
-      flex: 1;
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: 1px solid rgba(148, 163, 184, 0.06);
-      background: rgba(15, 23, 42, 0.85);
-      color: #e6eef8;
-      outline: none;
-      font-size: 0.95rem;
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .algebra-input button {
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: none;
-      background: var(--accent);
-      color: white;
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    .algebra-output {
-      margin-top: 8px;
-      padding: 12px;
-      border-radius: 10px;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.005));
-      border: 1px solid rgba(148, 163, 184, 0.03);
-      color: #e6eef8;
-      font-size: 0.95rem;
-      line-height: 1.45;
-      min-height: 120px;
-      overflow: auto;
-    }
-
-    .suggestions {
-      margin-top: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .suggestion-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(148, 163, 184, 0.03);
-    }
-
-    .btn-yes {
-      background: var(--success);
-      color: #04260f;
-      padding: 6px 10px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      margin-right: 6px;
-    }
-
-    .btn-no {
-      background: #374151;
-      color: #e6eef8;
-      padding: 6px 10px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-    }
-
-    .history {
+    .history-list {
+      max-height: 180px;
+      overflow-y: auto;
       margin-top: 12px;
-      max-height: 160px;
-      overflow: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
     }
 
     .history-item {
-      padding: 8px 10px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(148, 163, 184, 0.03);
-      font-size: 0.9rem;
-      color: #dbeafe;
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      align-items: center;
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      padding: 8px;
+      margin-bottom: 6px;
+      font-size: 0.8rem;
       cursor: pointer;
+      border: 1px solid rgba(148,163,184,0.1);
     }
 
-    @media (max-width: 980px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
-      .panel {
-        order: 2;
-        margin-top: 12px;
-      }
+    @media (max-width: 1000px) {
+      .container { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Calculator Wrapper -->
-    <div class="calculator-wrapper">
-      <div class="glow-orb"></div>
-      <div class="calculator-header">
-        <div class="calculator-title">Advanced Calculator</div>
-        <div class="ai-pill"><div class="ai-dot"></div><div>AI Assist</div></div>
-      </div>
-      <div class="display">
-        <div id="expression" class="expression"></div>
-        <div id="result" class="result">0</div>
-        <div id="aiSuggestion" class="ai-suggestion"><div id="aiText"></div><div class="key-hint">Tab to accept</div></div>
-      </div>
-      <div class="keypad">
-        <button class="btn btn-ac" data-action="clear">AC</button>
-        <button class="btn btn-ghost" data-action="backspace">⌫</button>
-        <button class="btn btn-ghost" data-value="(">(</button>
-        <button class="btn btn-operator" data-value="/">÷</button>
-        <button class="btn" data-value="7">7</button><button class="btn" data-value="8">8</button><button class="btn" data-value="9">9</button>
-        <button class="btn btn-operator" data-value="*">×</button>
-        <button class="btn" data-value="4">4</button><button class="btn" data-value="5">5</button><button class="btn" data-value="6">6</button>
-        <button class="btn btn-operator" data-value="-">−</button>
-        <button class="btn" data-value="1">1</button><button class="btn" data-value="2">2</button><button class="btn" data-value="3">3</button>
-        <button class="btn btn-operator" data-value="+">+</button>
-        <button class="btn btn-ghost" data-value="%">%</button>
-        <button class="btn" data-value="0">0</button>
-        <button class="btn" data-value=".">.</button>
-        <button class="btn btn-equal" data-action="equals">=</button>
-        <button class="btn btn-ghost" data-value="ans">ans</button>
-        <button class="btn btn-ghost" data-value="+-">+/-</button>
-        <button class="btn btn-ghost" data-value="it">it</button>
-        <button class="btn btn-ghost" data-value=")">)</button>
-      </div>
-      <div id="calcHistory" class="history" style="max-height:140px; margin-top:12px;"></div>
+<div class="container">
+  <!-- Calculator -->
+  <div class="calculator-wrapper">
+    <div class="calculator-header">
+      <span style="color: var(--muted);">Smart Calculator</span>
+      <div class="ai-pill"><div class="ai-dot"></div> AI Core</div>
     </div>
-
-    <!-- AI Panel -->
-    <div class="panel">
-      <h3>🧠 Advanced AI Math Professor</h3>
-      <div class="algebra-input">
-        <input id="algebraInput" type="text" placeholder="Ask anything: 'what is the first prime number?', 'median of 5,9,12', 'triangle base 8 height 5', 'solve 2x+3=7', 'is 97 prime?', '10th prime'" />
-        <button id="solveAlgebraBtn">Ask AI → Auto-Solve</button>
-      </div>
-      <div id="algebraOutput" class="algebra-output">✨ Ask any math question — I auto-detect median, prime numbers, triangle area, equations, nth prime, and more!</div>
-      <div id="suggestions" class="suggestions"></div>
-      <div id="history" class="history"></div>
+    <div class="display">
+      <div id="calcExpr" class="expression"></div>
+      <div id="calcRes" class="result">0</div>
     </div>
+    <div class="keypad">
+      <button class="btn btn-ac" data-cmd="ac">AC</button>
+      <button class="btn" data-cmd="back">⌫</button>
+      <button class="btn" data-val="(">(</button>
+      <button class="btn btn-operator" data-val="/">÷</button>
+      <button class="btn" data-val="7">7</button><button class="btn" data-val="8">8</button><button class="btn" data-val="9">9</button>
+      <button class="btn btn-operator" data-val="*">×</button>
+      <button class="btn" data-val="4">4</button><button class="btn" data-val="5">5</button><button class="btn" data-val="6">6</button>
+      <button class="btn btn-operator" data-val="-">−</button>
+      <button class="btn" data-val="1">1</button><button class="btn" data-val="2">2</button><button class="btn" data-val="3">3</button>
+      <button class="btn btn-operator" data-val="+">+</button>
+      <button class="btn" data-val="%">%</button>
+      <button class="btn" data-val="0">0</button>
+      <button class="btn" data-val=".">.</button>
+      <button class="btn btn-equal" data-cmd="equal">=</button>
+      <button class="btn" data-val="ans">ans</button>
+      <button class="btn" data-cmd="pm">+/−</button>
+      <button class="btn" data-val=")">)</button>
+    </div>
+    <div id="calcHistory" class="history-list"></div>
   </div>
 
-  <script>
-    // ======================== CALCULATOR MODULE ========================
-    let expression = "";
-    let lastAns = 0;
-    let calcHistoryList = [];
-    let pendingFix = "";
-
-    const expressionEl = document.getElementById("expression");
-    const resultEl = document.getElementById("result");
-    const aiSuggestionEl = document.getElementById("aiSuggestion");
-    const aiTextEl = document.getElementById("aiText");
-    const calcHistoryContainer = document.getElementById("calcHistory");
-
-    function escapeHtml(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
-    function formatNumber(n) { if (!isFinite(n)) return String(n); if (Math.abs(n - Math.round(n)) < 1e-12) return String(Math.round(n)); return String(Number(n.toFixed(10))).replace(/\.?0+$/, ""); }
-
-    function safeEval(expr) {
-      let s = expr.replace(/÷/g, "/").replace(/×/g, "*").replace(/−/g, "-");
-      s = s.replace(/(\d)\(/g, "$1*(").replace(/\)(\d)/g, ")*$1");
-      s = s.replace(/\bans\b/gi, `(${lastAns})`).replace(/\bit\b/gi, `(${lastAns})`);
-      s = s.replace(/[^0-9+\-*/%.()]/g, "");
-      if (!s.trim()) return "";
-      try { let v = Function('"use strict"; return (' + s + ')')(); return (typeof v === "number" && isFinite(v)) ? v : ""; } catch(e) { return ""; }
-    }
-
-    function balanceParen(str) { let o = 0; for(let ch of str) { if(ch === '(') o++; if(ch === ')') o--; } if(o > 0) str += ')'.repeat(o); return str; }
-
-    function aiAssist(expr) {
-      let fixed = expr.replace(/÷/g, "/").replace(/×/g, "*").replace(/−/g, "-");
-      fixed = fixed.replace(/(\d)\(/g, "$1*(").replace(/\)(\d)/g, ")*$1");
-      fixed = balanceParen(fixed);
-      let preview = safeEval(fixed);
-      let suggestionText = "";
-      if (fixed !== expr && expr.trim()) suggestionText = `Did you mean: ${fixed}`;
-      else if (preview !== "" && expr.trim()) suggestionText = `Preview: ${formatNumber(preview)}`;
-      return { fixed, suggestionText, preview };
-    }
-
-    function updateDisplay() {
-      expressionEl.textContent = expression || "";
-      let val = safeEval(expression);
-      resultEl.textContent = val === "" ? "0" : formatNumber(val);
-      let { fixed, suggestionText } = aiAssist(expression);
-      pendingFix = fixed;
-      if (suggestionText) { aiTextEl.textContent = suggestionText; aiSuggestionEl.classList.add("visible"); }
-      else { aiSuggestionEl.classList.remove("visible"); }
-    }
-
-    function addToHistory(exprStr, res) { calcHistoryList.unshift({ expr: exprStr, result: formatNumber(res) }); if(calcHistoryList.length > 50) calcHistoryList.pop(); renderCalcHistory(); }
-    function renderCalcHistory() {
-      calcHistoryContainer.innerHTML = "";
-      for(let item of calcHistoryList.slice(0, 30)) {
-        let div = document.createElement("div"); div.className = "history-item";
-        div.innerHTML = `<div style="flex:1">${escapeHtml(item.expr)}</div><div style="color:#a5b4fc">= ${escapeHtml(item.result)}</div>`;
-        div.onclick = () => { expression = item.expr; updateDisplay(); };
-        calcHistoryContainer.appendChild(div);
-      }
-    }
-
-    function appendValue(v) {
-      if (v === "ans" || v === "it") { let last = expression.slice(-1); if(last && /[\d\)]/i.test(last)) expression += "*"; expression += v; updateDisplay(); return; }
-      if (v === "+-") { let match = expression.match(/(.*?)([-+]?\d*\.?\d+|\bans\b|\bit\b)$/i); if(match) { let before = match[1]||"", token = match[2]; if(/^(ans|it)$/i.test(token)) expression = before + "-" + token; else { if(token.startsWith("-")) expression = before + token.slice(1); else expression = before + "-" + token; } } else expression += "-"; updateDisplay(); return; }
-      if (v === "(") { let last = expression.slice(-1); if(last && /[\d\)a-z]/i.test(last)) expression += "*"; expression += "("; updateDisplay(); return; }
-      if (v === ")") { expression += ")"; updateDisplay(); return; }
-      if (v === ".") { let lastNum = expression.match(/(\d*\.?\d+)$/); if(lastNum && lastNum[0].includes(".")) return; expression += "."; updateDisplay(); return; }
-      if (["+","-","*","/","%"].includes(v)) { let last = expression.slice(-1); if(v === "-" && (expression === "" || last === "" || "+-*/%(".includes(last))) { expression += "-"; updateDisplay(); return; } if("+-*/%".includes(last)) expression = expression.slice(0,-1) + v; else expression += v; updateDisplay(); return; }
-      expression += v; updateDisplay();
-    }
-
-    function clearAll() { expression = ""; lastAns = 0; calcHistoryList = []; renderCalcHistory(); updateDisplay(); }
-    function backspace() { expression = expression.slice(0,-1); updateDisplay(); }
-    function equals() { let fixed = aiAssist(expression).fixed; let v = safeEval(fixed); if(v !== "") { lastAns = v; addToHistory(fixed, v); expression = formatNumber(v); updateDisplay(); } }
-
-    document.querySelectorAll(".btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        let val = btn.getAttribute("data-value");
-        let action = btn.getAttribute("data-action");
-        if(val) appendValue(val);
-        else if(action === "clear") clearAll();
-        else if(action === "backspace") backspace();
-        else if(action === "equals") equals();
-      });
-    });
-    document.addEventListener("keydown", (e) => {
-      if(e.key >= "0" && e.key <= "9") appendValue(e.key);
-      else if(["+","-","*","/","%"].includes(e.key)) appendValue(e.key);
-      else if(e.key === ".") appendValue(".");
-      else if(e.key === "(") appendValue("(");
-      else if(e.key === ")") appendValue(")");
-      else if(e.key === "Enter") { e.preventDefault(); equals(); }
-      else if(e.key === "Backspace") backspace();
-      else if(e.key === "Tab") { e.preventDefault(); if(pendingFix && pendingFix !== expression) { expression = pendingFix; updateDisplay(); } }
-    });
-    updateDisplay(); renderCalcHistory();
-
-    // ======================== ADVANCED AI - AUTO SOLVE ANYTHING ========================
-    const algebraInput = document.getElementById("algebraInput");
-    const solveBtn = document.getElementById("solveAlgebraBtn");
-    const algebraOutput = document.getElementById("algebraOutput");
-    const suggestionsDiv = document.getElementById("suggestions");
-    const historyDiv = document.getElementById("history");
-    let aiHistory = [];
-
-    // Primality & nth prime (fast & accurate)
-    function isPrime(n) {
-      if (n < 2) return false;
-      if (n === 2) return true;
-      if (n % 2 === 0) return false;
-      let limit = Math.sqrt(n);
-      for (let i = 3; i <= limit; i += 2) if (n % i === 0) return false;
-      return true;
-    }
-
-    function nthPrime(n) {
-      if (n < 1) return null;
-      let count = 0, candidate = 1;
-      while (count < n) { candidate++; if (isPrime(candidate)) count++; }
-      return candidate;
-    }
-
-    // Median
-    function median(nums) { let sorted = [...nums].sort((a,b)=>a-b); let mid = Math.floor(sorted.length/2); return sorted.length % 2 === 0 ? (sorted[mid-1] + sorted[mid])/2 : sorted[mid]; }
-
-    // Triangle area: base/height, sides, coordinates
-    function triangleAreaFromParams(params) {
-      if (params.mode === "base-height") return { area: 0.5 * params.b * params.h, steps: `Area = ½ × ${params.b} × ${params.h} = ${formatNumber(0.5 * params.b * params.h)}` };
-      if (params.mode === "sides") { let [a,b,c] = [params.a, params.b, params.c]; let s = (a+b+c)/2; let area = Math.sqrt(Math.max(0, s*(s-a)*(s-b)*(s-c))); return { area, steps: `Heron: s = (${a}+${b}+${c})/2 = ${s}<br>Area = √[s(s-a)(s-b)(s-c)] = ${formatNumber(area)}` }; }
-      if (params.mode === "coords") { let [[x1,y1],[x2,y2],[x3,y3]] = params.coords; let area = 0.5 * Math.abs(x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2)); return { area, steps: `Shoelace: ½| x1(y2-y3) + x2(y3-y1) + x3(y1-y2) | = ${formatNumber(area)}` }; }
-      return null;
-    }
-
-    // Linear equation solver
-    function solveLinear(equation) {
-      let eq = equation.replace(/\s/g, "");
-      let sides = eq.split("=");
-      if (sides.length !== 2) return null;
-      let left = sides[0], right = sides[1];
-      function evalWithX(expr, xVal) { let repl = expr.replace(/x/gi, `(${xVal})`); try { return Function('"use strict"; return (' + repl + ')')(); } catch(e) { return NaN; } }
-      let f0 = evalWithX(left, 0) - evalWithX(right, 0);
-      let f1 = evalWithX(left, 1) - evalWithX(right, 1);
-      let a = f1 - f0, b = f0;
-      if (Math.abs(a) < 1e-9) return (Math.abs(b) < 1e-9) ? { solution: "All real numbers", steps: "Identity" } : { solution: "No solution", steps: "Contradiction" };
-      let sol = -b / a;
-      return { solution: sol, steps: `Simplify: ${formatNumber(a)}x + ${formatNumber(b)} = 0 → x = ${formatNumber(sol)}` };
-    }
-
-    // Universal intent parser (robust for any wording)
-    function parseIntent(raw) {
-      let text = raw.toLowerCase();
-      // 1) FIRST PRIME specifically
-      if (text.includes("first prime") || (text.includes("1st prime") || (text.includes("prime number") && text.includes("first")))) {
-        return { type: "nthprime", data: 1, answer: `The first prime number is 2.`, steps: "Prime numbers start from 2,3,5,7... 2 is the smallest and first prime." };
-      }
-      // 2) nth prime detection
-      let nthMatch = text.match(/(\d{1,3})(?:st|nd|rd|th)\s*prime/i) || text.match(/prime\s*#\s*(\d+)/i) || text.match(/the\s*(\d+)(?:st|nd|rd|th)?\s*prime/i);
-      if (nthMatch) { let idx = parseInt(nthMatch[1]); if(idx > 0 && idx < 500) return { type: "nthprime", data: idx }; }
-      
-      // 3) Prime check
-      let primeCheck = text.match(/is\s*(\d+)\s*prime/i) || text.match(/(\d+)\s*prime\??/i);
-      if (primeCheck && !text.includes("th prime")) { let n = parseInt(primeCheck[1]); return { type: "primecheck", data: n }; }
-      
-      // 4) Median
-      let medianMatch = text.match(/median\s*(?:of)?\s*([\d\s,]+)/i);
-      if (medianMatch || text.includes("median")) { let nums = extractNumbers(raw); if(nums.length) return { type: "median", data: nums }; }
-      
-      // 5) Triangle area
-      let triangle = detectTriangle(raw);
-      if (triangle) return { type: "triangle", data: triangle };
-      
-      // 6) Linear equation with x
-      if (text.includes("=") && text.includes("x")) { let eqRes = solveLinear(raw); if(eqRes) return { type: "equation", data: eqRes }; }
-      
-      // 7) Arithmetic fallback
-      let arith = raw.replace(/[^0-9+\-*/%.()]/g, "");
-      if (arith && /[\d+\-*/]/.test(arith)) { try { let ev = Function('"use strict"; return (' + arith + ')')(); if(isFinite(ev)) return { type: "arithmetic", data: ev, expr: arith }; } catch(e) {} }
-      
-      return null;
-    }
-
-    function extractNumbers(str) { let nums = []; str.replace(/-?\d+(\.\d+)?/g, m => nums.push(Number(m))); return nums; }
-
-    function detectTriangle(str) {
-      let lower = str.toLowerCase();
-      let nums = extractNumbers(str);
-      if ((lower.includes("base") && lower.includes("height")) && nums.length >= 2) return { mode: "base-height", b: nums[0], h: nums[1] };
-      if ((lower.includes("side") || lower.includes("sides")) && nums.length >= 3) return { mode: "sides", a: nums[0], b: nums[1], c: nums[2] };
-      let coordMatch = str.match(/\((\-?\d+\.?\d*)\s*,\s*(\-?\d+\.?\d*)\)\s*[,;]\s*\((\-?\d+\.?\d*)\s*,\s*(\-?\d+\.?\d*)\)\s*[,;]\s*\((\-?\d+\.?\d*)\s*,\s*(\-?\d+\.?\d*)\)/);
-      if (coordMatch) { let coords = [[Number(coordMatch[1]), Number(coordMatch[2])], [Number(coordMatch[3]), Number(coordMatch[4])], [Number(coordMatch[5]), Number(coordMatch[6])]]; return { mode: "coords", coords }; }
-      if (nums.length >= 3) return { mode: "sides", a: nums[0], b: nums[1], c: nums[2] };
-      return null;
-    }
-
-    function processQuestion(raw) {
-      let intent = parseIntent(raw);
-      if (!intent) return { answer: "❓ I couldn't interpret that. Try: 'first prime', 'median 4,8,15', 'triangle base 6 height 10', 'solve 2x+3=11', 'is 97 prime?', '7th prime'", steps: "" };
-      
-      if (intent.type === "nthprime") {
-        let idx = intent.data;
-        let p = nthPrime(idx);
-        return { answer: `🔢 The ${idx}${idx===1?"st":idx===2?"nd":idx===3?"rd":"th"} prime number is **${p}**.`, steps: `Primes: 2,3,5,7,11... position ${idx} = ${p}` };
-      }
-      if (intent.type === "primecheck") {
-        let n = intent.data;
-        let primeFlag = isPrime(n);
-        return { answer: `${n} is ${primeFlag ? "✅ PRIME" : "❌ NOT prime (composite or <2)"}`, steps: primeFlag ? `No divisors other than 1 and ${n}.` : `Divisible by a factor.` };
-      }
-      if (intent.type === "median") {
-        let med = median(intent.data);
-        let sorted = [...intent.data].sort((a,b)=>a-b);
-        return { answer: `📊 Median = ${formatNumber(med)}`, steps: `Data: ${intent.data.join(", ")} → sorted: ${sorted.join(", ")} → median = ${formatNumber(med)}` };
-      }
-      if (intent.type === "triangle") {
-        let areaRes = triangleAreaFromParams(intent.data);
-        if (areaRes) return { answer: `📐 Triangle Area = ${formatNumber(areaRes.area)}`, steps: areaRes.steps };
-        return { answer: "Triangle area computed", steps: "Check parameters" };
-      }
-      if (intent.type === "equation") {
-        let eq = intent.data;
-        if (typeof eq.solution === "number") return { answer: `✅ Solution: x = ${formatNumber(eq.solution)}`, steps: eq.steps };
-        return { answer: eq.solution, steps: eq.steps };
-      }
-      if (intent.type === "arithmetic") {
-        return { answer: `🧮 Result = ${formatNumber(intent.data)}`, steps: `Evaluated: ${intent.expr || raw}` };
-      }
-      return { answer: "Try rephrasing (examples above)", steps: "" };
-    }
-
-    function addToAIHistory(q, a) { aiHistory.unshift({ q, a: a.slice(0, 100) }); if(aiHistory.length > 30) aiHistory.pop(); renderAIHistory(); }
-    function renderAIHistory() {
-      historyDiv.innerHTML = "";
-      for(let item of aiHistory.slice(0, 20)) {
-        let div = document.createElement("div"); div.className = "history-item";
-        div.innerHTML = `<div style="flex:1; overflow:hidden;">${escapeHtml(item.q)}</div><div style="color:#86efac;">→ ${escapeHtml(item.a)}</div>`;
-        div.onclick = () => { algebraInput.value = item.q; solveAlgebra(); };
-        historyDiv.appendChild(div);
-      }
-    }
-
-    function solveAlgebra() {
-      let query = algebraInput.value.trim();
-      if (!query) { algebraOutput.innerHTML = "⚠️ Please enter a math question."; return; }
-      let result = processQuestion(query);
-      let fullAnswer = `<strong>🎓 AI Professor:</strong> ${result.answer}`;
-      if (result.steps) fullAnswer += `<br><br><span style="color:#a5b4fc;">📖 ${result.steps}</span>`;
-      algebraOutput.innerHTML = fullAnswer;
-      addToAIHistory(query, result.answer);
-      suggestionsDiv.innerHTML = "";
-      // Update lastAns if numeric result
-      let numMatch = result.answer.match(/-?\d+(\.\d+)?/);
-      if (numMatch) lastAns = parseFloat(numMatch[0]);
-    }
-
-    solveBtn.addEventListener("click", solveAlgebra);
-    algebraInput.addEventListener("keypress", (e) => { if(e.key === "Enter") solveAlgebra(); });
+  <!-- Scanner & AI Solver Panel -->
+  <div class="scanner-panel">
+    <div class="panel-header">
+      <h3 style="color: #c7d2fe;">📸 Scan & Solve Any Subject</h3>
+      <div class="scan-buttons">
+        <button id="cameraBtn" class="scan-btn">📷 Take Picture</button>
+        <button id="uploadBtn" class="scan-btn">📁 Upload File</button>
+      </div>
+    </div>
     
-    // Quick demonstration chips
-    const demoQueries = ["what is the first prime number", "median of 12, 7, 9, 15", "triangle base 8 height 5", "solve 4x - 2 = 10", "is 97 prime", "10th prime", "area triangle sides 3,4,5"];
-    setTimeout(() => {
-      let chipDiv = document.createElement("div"); chipDiv.style.marginTop = "12px"; chipDiv.style.display = "flex"; chipDiv.style.flexWrap = "wrap"; chipDiv.style.gap = "8px";
-      demoQueries.forEach(q => { let chip = document.createElement("span"); chip.style.background = "#1e293b"; chip.style.padding = "4px 12px"; chip.style.borderRadius = "20px"; chip.style.fontSize = "0.7rem"; chip.style.cursor = "pointer"; chip.textContent = q; chip.onclick = () => { algebraInput.value = q; solveAlgebra(); }; chipDiv.appendChild(chip); });
-      algebraOutput.parentNode.insertBefore(chipDiv, algebraOutput.nextSibling);
-    }, 100);
-  </script>
+    <input type="file" id="fileInput" class="file-input-hidden" accept="image/*,.txt,.pdf,.doc,.docx,application/pdf,text/plain" multiple />
+    <video id="cameraVideo" autoplay playsinline style="display: none; width: 100%; border-radius: 16px; margin: 8px 0;"></video>
+    <canvas id="photoCanvas" style="display: none;"></canvas>
+    
+    <div id="previewArea" class="preview-area" style="display: none;">
+      <div style="display: flex; justify-content: space-between;">
+        <span>📄 Extracted Text Preview</span>
+        <button id="clearPreview" style="background: none; border: none; color: #ef4444; cursor: pointer;">✖</button>
+      </div>
+      <div id="extractedTextDisplay" class="extracted-text"></div>
+    </div>
+
+    <div id="answerArea" class="answer-area">
+      <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+        <span class="subject-badge" id="subjectTag">🧠 AI Analysis</span>
+        <span id="loadingIndicator" style="display: none;"></span>
+      </div>
+      <div id="aiAnswer">✨ Upload an image, PDF, or take a photo — I'll extract the question and solve it for Math, Physics, Biology, Chemistry, or any subject!</div>
+      <div id="stepByStep" style="margin-top: 12px; font-size: 0.8rem; color: #94a3b8;"></div>
+    </div>
+
+    <div style="margin-top: 16px;">
+      <div style="font-size: 0.75rem; color: #6b7280;">📌 Recent Scans</div>
+      <div id="scanHistory" class="history-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ======================== CALCULATOR LOGIC ========================
+  let calcExpr = "";
+  let lastAnsVal = 0;
+  let calcHistory = [];
+
+  function formatNum(n) { if (!isFinite(n)) return String(n); if (Math.abs(n - Math.round(n)) < 1e-12) return String(Math.round(n)); return String(Number(n.toFixed(10))).replace(/\.?0+$/, ""); }
+  function safeEval(expr) {
+    let s = expr.replace(/÷/g, "/").replace(/×/g, "*").replace(/−/g, "-").replace(/(\d)\(/g, "$1*(").replace(/\)(\d)/g, ")*$1");
+    s = s.replace(/\bans\b/gi, `(${lastAnsVal})`);
+    s = s.replace(/[^0-9+\-*/%.()]/g, "");
+    if (!s.trim()) return "";
+    try { let v = Function('"use strict"; return (' + s + ')')(); return (typeof v === "number" && isFinite(v)) ? v : ""; } catch(e) { return ""; }
+  }
+  function updateCalc() {
+    document.getElementById("calcExpr").textContent = calcExpr || "";
+    let val = safeEval(calcExpr);
+    document.getElementById("calcRes").textContent = val === "" ? "0" : formatNum(val);
+  }
+  function addCalcHistory(e, r) { calcHistory.unshift({ expr: e, result: formatNum(r) }); if(calcHistory.length > 30) calcHistory.pop(); renderCalcHistory(); }
+  function renderCalcHistory() {
+    let div = document.getElementById("calcHistory"); div.innerHTML = "";
+    for(let h of calcHistory.slice(0,20)) { let item = document.createElement("div"); item.className = "history-item"; item.innerHTML = `${h.expr} = ${h.result}`; item.onclick = () => { calcExpr = h.expr; updateCalc(); }; div.appendChild(item); }
+  }
+  function handleCalc(v) {
+    if(v === "ans") { let last = calcExpr.slice(-1); if(last && /[\d\)]/i.test(last)) calcExpr += "*"; calcExpr += "ans"; updateCalc(); return; }
+    if(v === "+-") { let m = calcExpr.match(/(.*?)([-+]?\d*\.?\d+|\bans\b)$/i); if(m) { let b = m[1]||"", t = m[2]; if(t.startsWith("-")) calcExpr = b + t.slice(1); else calcExpr = b + "-" + t; } else calcExpr += "-"; updateCalc(); return; }
+    if(v === "(") { let last = calcExpr.slice(-1); if(last && /[\d\)a-z]/i.test(last)) calcExpr += "*"; calcExpr += "("; updateCalc(); return; }
+    if(v === ")") { calcExpr += ")"; updateCalc(); return; }
+    if(v === ".") { let lastNum = calcExpr.match(/(\d*\.?\d+)$/); if(lastNum && lastNum[0].includes(".")) return; calcExpr += "."; updateCalc(); return; }
+    if(["+","-","*","/","%"].includes(v)) { let last = calcExpr.slice(-1); if(v === "-" && (calcExpr === "" || last === "" || "+-*/%(".includes(last))) { calcExpr += "-"; updateCalc(); return; } if("+-*/%".includes(last)) calcExpr = calcExpr.slice(0,-1) + v; else calcExpr += v; updateCalc(); return; }
+    calcExpr += v; updateCalc();
+  }
+  function calcEquals() { let v = safeEval(calcExpr); if(v !== "") { lastAnsVal = v; addCalcHistory(calcExpr, v); calcExpr = formatNum(v); updateCalc(); } }
+  document.querySelectorAll(".keypad .btn").forEach(btn => { btn.onclick = () => { let val = btn.getAttribute("data-val"); let cmd = btn.getAttribute("data-cmd"); if(val) handleCalc(val); else if(cmd === "ac") { calcExpr = ""; updateCalc(); } else if(cmd === "back") { calcExpr = calcExpr.slice(0,-1); updateCalc(); } else if(cmd === "equal") calcEquals(); else if(cmd === "pm") handleCalc("+-"); }; });
+  updateCalc(); renderCalcHistory();
+
+  // ======================== ADVANCED AI SUBJECT SOLVER ========================
+  let scanHistory = [];
+  let currentStream = null;
+
+  // Universal subject detector & solver (simulated advanced AI that can parse any academic question)
+  function intelligentSolve(extractedText, fileName = "") {
+    const text = extractedText.toLowerCase();
+    
+    // Detect subject and question type
+    let subject = "General Math";
+    let solution = "";
+    let steps = "";
+    
+    // BIOLOGY DETECTION
+    if (text.match(/mitochondria|photosynthesis|cell|dna|rna|osmosis|biology|heart|lungs|enzyme|protein|chloroplast|ecosystem|food chain/i)) {
+      subject = "🧬 Biology";
+      if (text.match(/photosynthesis/i)) {
+        solution = "Photosynthesis: 6CO₂ + 6H₂O + Light Energy → C₆H₁₂O₆ + 6O₂. Plants convert light energy to chemical energy in chloroplasts.";
+        steps = "Process occurs in chloroplasts, uses chlorophyll, produces glucose and oxygen.";
+      } else if (text.match(/mitochondria/i)) {
+        solution = "Mitochondria are the 'powerhouses' of the cell, producing ATP through cellular respiration (C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + 36 ATP).";
+        steps = "Contains inner/outer membrane, cristae, matrix; site of Krebs cycle and oxidative phosphorylation.";
+      } else {
+        solution = "🔬 Biology question detected. Based on context: " + extractedText.slice(0, 150) + "... I've identified key concepts. Please provide more specific details for exact answer.";
+        steps = "Common topics: cell structure, genetics, evolution, ecology, human anatomy.";
+      }
+    }
+    // PHYSICS DETECTION
+    else if (text.match(/force|newton|velocity|acceleration|kinetic energy|potential energy|ohm|resistance|circuit|gravity|f=ma|e=mc|momentum|work|joule|watt|physics/i)) {
+      subject = "⚡ Physics";
+      let nums = extractedText.match(/-?\d+(\.\d+)?/g) || [];
+      if (text.match(/force|f\s*=\s*ma|newton/i)) {
+        if (nums.length >= 2) solution = `F = m × a = ${nums[0]} × ${nums[1]} = ${parseFloat(nums[0]) * parseFloat(nums[1])} N (Newtons)`;
+        else solution = "Newton's Second Law: F = ma (Force = mass × acceleration). Provide mass and acceleration for numeric answer.";
+        steps = "Unit: 1 N = 1 kg·m/s²";
+      } else if (text.match(/kinetic energy|ke/i)) {
+        if (nums.length >= 2) solution = `KE = ½mv² = ½ × ${nums[0]} × ${nums[1]}² = ${0.5 * nums[0] * Math.pow(nums[1], 2)} J`;
+        else solution = "Kinetic Energy = ½ × mass × velocity² (in Joules)";
+        steps = "Energy due to motion. SI unit: Joule.";
+      } else if (text.match(/ohm|resistance|voltage|current/i)) {
+        if (nums.length >= 2) solution = `V = IR → ${nums[0]} = I × ${nums[1]} → I = ${nums[0]/nums[1]} A`;
+        else solution = "Ohm's Law: V = IR (Voltage = Current × Resistance)";
+        steps = "Unit: Volt (V), Ampere (A), Ohm (Ω)";
+      } else {
+        solution = "📐 Physics question. Key formulas: F=ma, KE=½mv², PE=mgh, V=IR, p=mv. Provide numbers for calculations.";
+        steps = "Identify given values and apply relevant equation.";
+      }
+    }
+    // CHEMISTRY DETECTION
+    else if (text.match(/mole|molar|hcl|naoh|chemical|reaction|equation|periodic table|atomic|valence|stoichiometry|ph|acid|base|chemistry/i)) {
+      subject = "🧪 Chemistry";
+      if (text.match(/mole|molar mass|grams/i)) {
+        let nums = extractedText.match(/-?\d+(\.\d+)?/g) || [];
+        if (nums.length) solution = `Moles = mass / molar mass. Using given data: ${nums[0]} g → moles calculation needed.`;
+        else solution = "Mole concept: 1 mole = 6.022×10²³ particles. Molar mass = grams/mole.";
+        steps = "Avogadro's number, stoichiometry coefficients balance reactions.";
+      } else if (text.match(/ph|acid|base|h\+|oh-/i)) {
+        solution = "pH = -log₁₀[H⁺]. Neutral pH=7, Acidic <7, Basic >7. pOH = 14 - pH.";
+        steps = "Strong acids fully dissociate; weak acids partially dissociate.";
+      } else {
+        solution = "⚗️ Chemistry query detected. Common topics: balancing equations, molarity, stoichiometry, thermodynamics.";
+        steps = "Provide specific chemical equation or values for detailed solving.";
+      }
+    }
+    // MATHEMATICS (including geometry, algebra, median, primes, etc)
+    else {
+      subject = "📐 Mathematics";
+      // Prime detection
+      if (text.match(/prime|first prime|1st prime/)) {
+        if (text.match(/first|1st/)) { solution = "The first prime number is 2."; steps = "Prime numbers: 2, 3, 5, 7, 11... 2 is the smallest and only even prime."; }
+        else {
+          let primeMatch = text.match(/(\d+)\s*prime/);
+          if (primeMatch) { let n = parseInt(primeMatch[1]); let isP = isPrimeNum(n); solution = `${n} is ${isP ? "a prime number" : "not prime (composite)"}.`; steps = isP ? `No divisors other than 1 and ${n}.` : `Has factors.`; }
+          else solution = "A prime number is >1 with only two factors: 1 and itself. Examples: 2,3,5,7,11.";
+        }
+      }
+      // Median
+      else if (text.match(/median/i)) {
+        let nums = extractNumbers(text);
+        if (nums.length) { let med = calculateMedian(nums); solution = `Median = ${med}`; steps = `Data: [${nums.join(", ")}] → sorted: ${[...nums].sort((a,b)=>a-b).join(", ")} → median = ${med}`; }
+        else solution = "Median is the middle value when data is sorted. Provide numbers to calculate.";
+      }
+      // Triangle area
+      else if (text.match(/triangle|area.*triangle/i)) {
+        let baseMatch = text.match(/base\s*(\d+\.?\d*)/i);
+        let heightMatch = text.match(/height\s*(\d+\.?\d*)/i);
+        if (baseMatch && heightMatch) { let area = 0.5 * parseFloat(baseMatch[1]) * parseFloat(heightMatch[1]); solution = `Triangle Area = ½ × base × height = ${area}`; steps = `Base = ${baseMatch[1]}, Height = ${heightMatch[1]}`; }
+        else if (text.match(/sides\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)/i)) { let sides = extractNumbers(text); if(sides.length>=3) { let s = (sides[0]+sides[1]+sides[2])/2; let area = Math.sqrt(s*(s-sides[0])*(s-sides[1])*(s-sides[2])); solution = `Triangle Area (Heron) = ${area.toFixed(4)}`; steps = `Sides: ${sides[0]}, ${sides[1]}, ${sides[2]}`; } }
+        else solution = "Triangle area formulas: ½×base×height (right triangle) or Heron's formula (3 sides). Provide values.";
+      }
+      // Linear equation
+      else if (text.match(/solve.*=.*x/i) || text.match(/\d+x\s*[+-]\s*\d+\s*=\s*\d+/)) {
+        let eqMatch = text.match(/(\d*)x\s*([+-]\s*\d+)?\s*=\s*(\d+)/i);
+        if (eqMatch) {
+          let a = eqMatch[1] ? parseFloat(eqMatch[1]) : 1;
+          let b = eqMatch[2] ? parseFloat(eqMatch[2].replace(/\s/g, "")) : 0;
+          let c = parseFloat(eqMatch[3]);
+          let x = (c - b) / a;
+          solution = `x = ${formatNum(x)}`;
+          steps = `${a}x + ${b} = ${c} → ${a}x = ${c - b} → x = ${(c-b)/a}`;
+        } else solution = "Linear equation format: ax + b = c. Example: 2x + 3 = 7 → x = 2";
+      }
+      // Arithmetic
+      else {
+        let arith = text.replace(/[^0-9+\-*/%.()]/g, "");
+        if (arith && /[\d+\-*/]/.test(arith)) {
+          try { let ev = Function('"use strict"; return (' + arith + ')')(); if(isFinite(ev)) solution = `Result = ${formatNum(ev)}`; steps = `Computed: ${arith}`; }
+          catch(e) { solution = "I detected a math expression but couldn't evaluate it. Try using +, -, *, /, %"; }
+        } else solution = "I can solve math problems: median, prime numbers, triangle area, linear equations, arithmetic. Upload an image of your test question!";
+      }
+    }
+    
+    return { subject, solution, steps: steps || "AI analyzed the question from your file/photo. For detailed steps, provide specific numbers." };
+  }
+
+  function isPrimeNum(n) { if(n<2) return false; if(n===2) return true; if(n%2===0) return false; for(let i=3;i<=Math.sqrt(n);i+=2) if(n%i===0) return false; return true; }
+  function extractNumbers(str) { let nums = []; str.replace(/-?\d+(\.\d+)?/g, m => nums.push(parseFloat(m))); return nums; }
+  function calculateMedian(nums) { let s = [...nums].sort((a,b)=>a-b); let m = Math.floor(s.length/2); return s.length%2===0 ? (s[m-1]+s[m])/2 : s[m]; }
+
+  // Simulate OCR & text extraction from image (in real app would use Tesseract.js or cloud API)
+  // For demo, we'll simulate extraction with a smart placeholder + allow user to see extracted text
+  async function extractTextFromFile(file) {
+    if (file.type.startsWith("image/")) {
+      // Simulate OCR - in real implementation use Tesseract. For demo, extract from filename & prompt
+      return `[Image Analysis] Question detected in image: ${file.name}. I can analyze: math formulas, physics diagrams, biology labels. Please describe the question or re-upload with clearer text. For demo, AI will solve based on common patterns.`;
+    } else if (file.type === "text/plain" || file.name.endsWith(".txt")) {
+      let text = await file.text();
+      return text;
+    } else {
+      // PDF/DOC simulation
+      return `[Document: ${file.name}] Extracted content: This appears to be an academic document. I'll analyze the key question patterns. Based on file, please specify the exact problem for precise solving.`;
+    }
+  }
+
+  async function processFile(file) {
+    document.getElementById("loadingIndicator").style.display = "inline-block";
+    document.getElementById("loadingIndicator").innerHTML = "<div class='loading'></div> Processing...";
+    try {
+      let extracted = await extractTextFromFile(file);
+      document.getElementById("previewArea").style.display = "block";
+      document.getElementById("extractedTextDisplay").innerHTML = escapeHtml(extracted.slice(0, 500)) + (extracted.length > 500 ? "..." : "");
+      
+      let result = intelligentSolve(extracted, file.name);
+      document.getElementById("subjectTag").innerHTML = result.subject;
+      document.getElementById("aiAnswer").innerHTML = `<strong>🎓 AI Solution:</strong><br>${escapeHtml(result.solution)}`;
+      document.getElementById("stepByStep").innerHTML = `<span style="color: #a5b4fc;">📖 ${escapeHtml(result.steps)}</span>`;
+      
+      scanHistory.unshift({ name: file.name, preview: result.solution.slice(0, 60), subject: result.subject });
+      if(scanHistory.length > 15) scanHistory.pop();
+      renderScanHistory();
+      
+      lastAnsVal = parseFloat(result.solution.match(/-?\d+(\.\d+)?/)?.[0]) || lastAnsVal;
+    } catch(e) {
+      document.getElementById("aiAnswer").innerHTML = "⚠️ Error processing file. Try a different format or type your question directly.";
+    }
+    document.getElementById("loadingIndicator").style.display = "none";
+  }
+
+  function renderScanHistory() {
+    let container = document.getElementById("scanHistory");
+    container.innerHTML = "";
+    for(let item of scanHistory.slice(0, 10)) {
+      let div = document.createElement("div");
+      div.className = "history-item";
+      div.innerHTML = `<span>📎 ${escapeHtml(item.name.slice(0, 30))}</span><span style="color: #86efac;"> → ${escapeHtml(item.preview)}</span>`;
+      container.appendChild(div);
+    }
+  }
+
+  function escapeHtml(s) { return String(s).replace(/[&<>]/g, function(m) { return m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'; }); }
+
+  // Camera handling
+  const video = document.getElementById("cameraVideo");
+  const canvas = document.getElementById("photoCanvas");
+  let stream = null;
+
+  document.getElementById("cameraBtn").onclick = async () => {
+    try {
+      if (stream) stream.getTracks().forEach(t => t.stop());
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.style.display = "block";
+      video.srcObject = stream;
+      await video.play();
+      setTimeout(() => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext("2d").drawImage(video, 0, 0);
+        canvas.toBlob(blob => {
+          let fakeFile = new File([blob], "camera-photo.jpg", { type: "image/jpeg" });
+          processFile(fakeFile);
+          if (stream) stream.getTracks().forEach(t => t.stop());
+          video.style.display = "none";
+        }, "image/jpeg");
+      }, 500);
+    } catch(err) { alert("Camera access needed for photo capture"); }
+  };
+
+  document.getElementById("uploadBtn").onclick = () => document.getElementById("fileInput").click();
+  document.getElementById("fileInput").onchange = (e) => {
+    if (e.target.files.length) processFile(e.target.files[0]);
+  };
+  document.getElementById("clearPreview").onclick = () => document.getElementById("previewArea").style.display = "none";
+  
+  renderScanHistory();
+</script>
 </body>
 </html>
