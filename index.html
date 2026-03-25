@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>NeuroMath: AI Calculator + Universal Math Solver</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    }
+
+    :root {
+      --bg-deep: #030617;
+      --bg-card: #0a0f1fcc;
+      --glass: rgba(15, 25, 45, 0.65);
+      --accent-purple: #818cf8;
+      --accent-glow: #6366f1;
+      --success-emerald: #10b981;
+      --warning-amber: #f59e0b;
+      --text-bright: #f1f5f9;
+      --text-dim: #94a3b8;
+      --border-subtle: rgba(148, 163, 184, 0.12);
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 20% 30%, rgba(99, 102, 241, 0.08), transparent 55%),
+                  linear-gradient(145deg, #030617 0%, #0a0f2a 100%);
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* main dashboard */
+    .dashboard {
+      max-width: 1380px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 26px;
+      backdrop-filter: blur(2px);
+    }
+
+    /* calculator panel */
+    .calc-glass {
+      background: rgba(8, 14, 26, 0.68);
+      backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      border: 1px solid var(--border-subtle);
+      padding: 1.5rem;
+      box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.6);
+      transition: all 0.2s ease;
+    }
+
+    .calc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1rem;
+    }
+
+    .badge-ai {
+      background: rgba(16, 185, 129, 0.12);
+      border-radius: 60px;
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #86efac;
+      border: 0.5px solid rgba(16, 185, 129, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulseDot 1.2s infinite;
+    }
+
+    @keyframes pulseDot {
+      0% { opacity: 0.5; transform: scale(1);}
+      100% { opacity: 1; transform: scale(1.2);}
+    }
+
+    .display-area {
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 1.5rem;
+      padding: 1.2rem;
+      margin: 18px 0;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    .expr-line {
+      min-height: 32px;
+      font-size: 1rem;
+      color: var(--text-dim);
+      text-align: right;
+      word-break: break-word;
+      letter-spacing: 0.2px;
+    }
+
+    .result-main {
+      font-size: 2.7rem;
+      font-weight: 700;
+      text-align: right;
+      color: var(--text-bright);
+      word-break: break-word;
+      line-height: 1.2;
+    }
+
+    .ai-correction {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+      font-size: 0.8rem;
+      background: rgba(99, 102, 241, 0.12);
+      padding: 8px 12px;
+      border-radius: 60px;
+      color: #c7d2fe;
+      transition: all 0.2s;
+    }
+
+    .key-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 24px 0 16px;
+    }
+
+    .key-btn {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      border: none;
+      padding: 14px 0;
+      border-radius: 1.2rem;
+      font-weight: 600;
+      font-size: 1.15rem;
+      color: #e2e8f0;
+      cursor: pointer;
+      transition: 0.1s linear;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(4px);
+    }
+
+    .key-btn:active { transform: translateY(2px); }
+    .op-btn { background: linear-gradient(135deg, #4f46e5, #6366f1); color: white; text-shadow: 0 0 2px rgba(0,0,0,0.2);}
+    .ac-btn { background: linear-gradient(135deg, #b91c1c, #dc2626);}
+    .equal-btn { background: linear-gradient(115deg, #10b981, #059669); grid-column: span 2; font-size: 1.3rem;}
+    .hist-list {
+      max-height: 180px;
+      overflow-y: auto;
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .hist-item {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    /* right panel (AI assistant) */
+    .ai-panel {
+      background: rgba(6, 12, 24, 0.7);
+      backdrop-filter: blur(14px);
+      border-radius: 2rem;
+      border: 1px solid rgba(129, 140, 248, 0.2);
+      padding: 1.5rem;
+    }
+
+    .query-bar {
+      display: flex;
+      gap: 12px;
+      margin: 1rem 0;
+    }
+
+    .query-bar input {
+      flex: 1;
+      background: #0f172acc;
+      border: 1px solid #334155;
+      border-radius: 2rem;
+      padding: 14px 18px;
+      color: white;
+      font-size: 0.9rem;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .query-bar input:focus { border-color: #818cf8; box-shadow: 0 0 0 2px rgba(129,140,248,0.3);}
+    .ask-btn {
+      background: #6366f1;
+      border: none;
+      border-radius: 2rem;
+      padding: 0 24px;
+      font-weight: 700;
+      cursor: pointer;
+      color: white;
+    }
+
+    .suggestion-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 12px 0 18px;
+    }
+    .suggestion-card {
+      background: #1e293b;
+      border-radius: 40px;
+      padding: 8px 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.8rem;
+      transition: 0.1s;
+    }
+    .yes-suggest { background: #10b981; border: none; color: white; border-radius: 30px; padding: 4px 12px; cursor: pointer; font-weight: 600; margin-left: 8px;}
+    .no-suggest { background: #475569; border: none; border-radius: 30px; padding: 4px 12px; cursor: pointer; color: #e2e8f0;}
+    .answer-blob {
+      background: #0f172a;
+      border-radius: 1.2rem;
+      padding: 1rem;
+      margin: 12px 0;
+      border-left: 4px solid #818cf8;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .history-qa {
+      max-height: 220px;
+      overflow-y: auto;
+      margin-top: 16px;
+    }
+    .qa-entry {
+      background: rgba(255,255,240,0.02);
+      border-radius: 14px;
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      font-size: 0.8rem;
+      display: flex;
+      gap: 8px;
+      cursor: pointer;
+    }
+    hr { border-color: #1e293b; margin: 12px 0;}
+
+    @media (max-width: 860px) {
+      .dashboard { grid-template-columns: 1fr; gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="dashboard">
+  <!-- Left side: advanced calculator with AI correction -->
+  <div class="calc-glass">
+    <div class="calc-header">
+      <span class="badge-ai"><span class="live-dot"></span> AI Core • Active Correction</span>
+      <span style="font-size: 0.7rem; color:#6b7280;">Auto‑correct: smart suggestions</span>
+    </div>
+
+    <div class="display-area">
+      <div class="expr-line" id="calcExpression"> </div>
+      <div class="result-main" id="calcResult">0</div>
+      <div id="calcSuggestionBox" class="ai-correction" style="opacity:0; visibility: hidden;">
+        <span id="suggestText"></span><span style="font-size:0.7rem;">↵ Tab to accept</span>
+      </div>
+    </div>
+
+    <div class="key-grid">
+      <button class="key-btn ac-btn" data-cmd="ac">AC</button>
+      <button class="key-btn" data-cmd="back">⌫</button>
+      <button class="key-btn" data-val="(">(</button>
+      <button class="key-btn op-btn" data-val="/">÷</button>
+
+      <button class="key-btn" data-val="7">7</button>
+      <button class="key-btn" data-val="8">8</button>
+      <button class="key-btn" data-val="9">9</button>
+      <button class="key-btn op-btn" data-val="*">×</button>
+
+      <button class="key-btn" data-val="4">4</button>
+      <button class="key-btn" data-val="5">5</button>
+      <button class="key-btn" data-val="6">6</button>
+      <button class="key-btn op-btn" data-val="-">−</button>
+
+      <button class="key-btn" data-val="1">1</button>
+      <button class="key-btn" data-val="2">2</button>
+      <button class="key-btn" data-val="3">3</button>
+      <button class="key-btn op-btn" data-val="+">+</button>
+
+      <button class="key-btn" data-val="%">%</button>
+      <button class="key-btn" data-val="0">0</button>
+      <button class="key-btn" data-val=".">.</button>
+      <button class="key-btn equal-btn" data-cmd="equal">=</button>
+
+      <button class="key-btn" data-val="ans">ans</button>
+      <button class="key-btn" data-cmd="plusminus">+/−</button>
+      <button class="key-btn" data-val="it">it</button>
+      <button class="key-btn" data-val=")">)</button>
+    </div>
+
+    <div class="hist-list" id="calcHistoryList"></div>
+    <div style="font-size: 0.65rem; text-align: right; margin-top: 8px; color:#4b5563;">AC clears full history & ans | Tab fixes expression</div>
+  </div>
+
+  <!-- Right panel: Universal Math Assistant + auto-correct wording / interpretations -->
+  <div class="ai-panel">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <h3 style="color:#cbd5e1;">🧠 Math AI Oracle</h3>
+      <span style="background:#2d3748; padding: 2px 10px; border-radius: 50px; font-size: 0.7rem;">auto‑correct wording</span>
+    </div>
+    <div class="query-bar">
+      <input type="text" id="userQuery" placeholder="Ask anything: 'area triangle base 8 height 5', 'median of 2,8,12,20', 'solve 3x+5=14', 'is 97 prime?', 'nth prime 7'" autocomplete="off">
+      <button class="ask-btn" id="askBtn">Ask AI</button>
+    </div>
+    <div id="suggestionZone" class="suggestion-pills"></div>
+    <div id="answerArea" class="answer-blob">✨ Type a question — AI will propose corrected interpretations. Click Yes to get instant solution.</div>
+    <hr>
+    <div style="font-size:0.85rem; color:#9ca3af;">📜 Recent Q&A (click to reuse)</div>
+    <div id="qaHistoryContainer" class="history-qa"></div>
+  </div>
+</div>
+
+<script>
+  // ------------------------  CORE CALCULATOR with ans / memory & AI suggestion ------------------------
+  let expr = "";
+  let lastAns = 0;
+  let calcMemory = [];    // history objects {expr, result}
+  let pendingFix = "";
+
+  const exprDiv = document.getElementById("calcExpression");
+  const resultDiv = document.getElementById("calcResult");
+  const suggestBox = document.getElementById("calcSuggestionBox");
+  const suggestTextSpan = document.getElementById("suggestText");
+  const calcHistoryContainer = document.getElementById("calcHistoryList");
+
+  function formatNum(n) {
+    if (!isFinite(n)) return String(n);
+    if (Math.abs(n - Math.round(n)) < 1e-12) return String(Math.round(n));
+    let v = Number(n.toFixed(10));
+    return String(v).replace(/\.?0+$/, "");
+  }
+
+  function sanitizeEval(exp) {
+    let s = exp.replace(/÷/g, "/").replace(/×/g, "*").replace(/−/g, "-");
+    s = s.replace(/(\d)\s*\(/g, "$1*(");
+    s = s.replace(/\)\s*(\d)/g, ")*$1");
+    s = s.replace(/\bans\b/gi, `(${lastAns})`).replace(/\bit\b/gi, `(${lastAns})`);
+    s = s.replace(/[^0-9+\-*/%.()]/g, "");
+    if (!s.trim()) return "";
+    try {
+      let val = Function('"use strict"; return (' + s + ')')();
+      return (typeof val === "number" && isFinite(val)) ? val : "";
+    } catch(e) { return ""; }
+  }
+
+  function balanceParentheses(str) {
+    let open = 0;
+    for(let ch of str) { if(ch === '(') open++; if(ch === ')') open--; }
+    if(open > 0) str += ')'.repeat(open);
+    return str;
+  }
+
+  function aiCorrection(rawExpr) {
+    let fixed = rawExpr.replace(/÷/g, "/").replace(/×/g, "*").replace(/−/g, "-");
+    fixed = fixed.replace(/(\d)(\()/g, "$1*(").replace(/(\))(\d)/g, ")*$2");
+    fixed = fixed.replace(/[^\d+\-*/%.()]/g, "");
+    fixed = balanceParentheses(fixed);
+    let evalCheck = sanitizeEval(fixed);
+    if(fixed !== rawExpr && rawExpr.trim() !== "") {
+      return { fixed, suggestion: `✏️ Auto‑correct → ${fixed}`, hasValue: evalCheck !== "" };
+    } else if(evalCheck !== "" && rawExpr.trim() !== "") {
+      return { fixed, suggestion: `🔮 preview: ${formatNum(evalCheck)}`, hasValue: true };
+    }
+    return { fixed, suggestion: "", hasValue: false };
+  }
+
+  function updateCalcDisplay() {
+    exprDiv.textContent = expr || " ";
+    let computed = sanitizeEval(expr);
+    resultDiv.textContent = computed === "" ? "0" : formatNum(computed);
+    const correction = aiCorrection(expr);
+    pendingFix = correction.fixed;
+    if(correction.suggestion) {
+      suggestTextSpan.textContent = correction.suggestion;
+      suggestBox.style.opacity = "1";
+      suggestBox.style.visibility = "visible";
+    } else {
+      suggestBox.style.opacity = "0";
+      suggestBox.style.visibility = "hidden";
+    }
+  }
+
+  function addToCalcHistory(exprStr, resultVal) {
+    let resStr = formatNum(resultVal);
+    let last = calcMemory[0];
+    if(last && last.expr === exprStr && last.result === resStr) return;
+    calcMemory.unshift({ expr: exprStr, result: resStr });
+    if(calcMemory.length > 80) calcMemory.pop();
+    renderCalcHistory();
+  }
+
+  function renderCalcHistory() {
+    calcHistoryContainer.innerHTML = "";
+    for(let item of calcMemory.slice(0, 30)) {
+      let div = document.createElement("div");
+      div.className = "hist-item";
+      div.innerHTML = `<span style="overflow:hidden; text-overflow:ellipsis;">${escapeHtml(item.expr)}</span><span style="color:#a5b4fc; font-weight:600;">= ${escapeHtml(item.result)}</span>`;
+      div.addEventListener("click", () => { expr = item.expr; updateCalcDisplay(); });
+      calcHistoryContainer.appendChild(div);
+    }
+  }
+
+  function evaluateFinal() {
+    let finalExpr = pendingFix && pendingFix !== expr ? pendingFix : expr;
+    if(!finalExpr.trim()) return;
+    let val = sanitizeEval(finalExpr);
+    if(val !== "") {
+      lastAns = val;
+      addToCalcHistory(finalExpr, val);
+      expr = formatNum(val);
+      updateCalcDisplay();
+    } else {
+      resultDiv.textContent = "Error";
+    }
+  }
+
+  function clearAll() {
+    expr = "";
+    lastAns = 0;
+    calcMemory = [];
+    renderCalcHistory();
+    updateCalcDisplay();
+  }
+
+  function backspaceCalc() { expr = expr.slice(0, -1); updateCalcDisplay(); }
+
+  function handleValue(v) {
+    if(v === "ans" || v === "it") {
+      let lastChar = expr.slice(-1);
+      if(lastChar && /[\d\)]/i.test(lastChar)) expr += "*";
+      expr += v;
+      updateCalcDisplay();
+      return;
+    }
+    if(v === "+-") {
+      let tokens = expr.match(/(.*?)([-+]?\d*\.?\d+|\bans\b|\bit\b)$/i);
+      if(tokens) {
+        let before = tokens[1] || "", token = tokens[2];
+        if(/^(ans|it)$/i.test(token)) expr = before + "-" + token;
+        else {
+          if(token.startsWith("-")) expr = before + token.slice(1);
+          else expr = before + "-" + token;
+        }
+      } else expr += "-";
+      updateCalcDisplay();
+      return;
+    }
+    if(v === "(") {
+      let last = expr.slice(-1);
+      if(last && /[\d\)a-z]/i.test(last)) expr += "*";
+      expr += "(";
+      updateCalcDisplay();
+      return;
+    }
+    if(v === ")") { expr += ")"; updateCalcDisplay(); return; }
+    if(v === ".") {
+      let lastNum = expr.match(/(\d*\.?\d+)$/);
+      if(lastNum && lastNum[0].includes(".")) return;
+      expr += ".";
+      updateCalcDisplay();
+      return;
+    }
+    if(["+","-","*","/","%"].includes(v)) {
+      let last = expr.slice(-1);
+      if(v === "-" && (expr === "" || last === "" || "+-*/%(".includes(last))) {
+        expr += "-";
+        updateCalcDisplay();
+        return;
+      }
+      if("+-*/%".includes(last)) {
+        expr = expr.slice(0, -1) + v;
+      } else expr += v;
+      updateCalcDisplay();
+      return;
+    }
+    expr += v;
+    updateCalcDisplay();
+  }
+
+  function acceptCorrection() {
+    if(pendingFix && pendingFix !== expr) {
+      expr = pendingFix;
+      updateCalcDisplay();
+    }
+  }
+
+  // bind calculator events
+  document.querySelectorAll(".key-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      let val = btn.getAttribute("data-val");
+      let cmd = btn.getAttribute("data-cmd");
+      if(val) handleValue(val);
+      else if(cmd === "ac") clearAll();
+      else if(cmd === "back") backspaceCalc();
+      else if(cmd === "equal") evaluateFinal();
+      else if(cmd === "plusminus") handleValue("+-");
+    });
+  });
+
+  document.addEventListener("keydown", (e) => {
+    const key = e.key;
+    if(/^[0-9]$/.test(key)) handleValue(key);
+    else if(["+", "-", "*", "/", "%"].includes(key)) handleValue(key);
+    else if(key === ".") handleValue(".");
+    else if(key === "(") handleValue("(");
+    else if(key === ")") handleValue(")");
+    else if(key === "Enter") { e.preventDefault(); evaluateFinal(); }
+    else if(key === "Backspace") backspaceCalc();
+    else if(key === "Tab") { e.preventDefault(); acceptCorrection(); }
+    else if(key === "Delete" && (e.ctrlKey || e.metaKey)) clearAll();
+  });
+
+  updateCalcDisplay();
+  renderCalcHistory();
+
+  // ====================== ADVANCED AI ASSISTANT : universal solving, median, area, prime, nth prime, linear equations, autocorrect wording ============
+  const userQuery = document.getElementById("userQuery");
+  const askBtn = document.getElementById("askBtn");
+  const suggestionZone = document.getElementById("suggestionZone");
+  const answerArea = document.getElementById("answerArea");
+  const qaHistoryContainer = document.getElementById("qaHistoryContainer");
+  let qaHistory = [];
+
+  function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m){ if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m; }); }
+
+  // normalizer with auto-correct wording: collapses misspellings and recovers patterns
+  function normalizeQuestion(raw) {
+    let s = raw.toLowerCase().trim();
+    s = s.replace(/what'?s|what is/gi, "what is");
+    s = s.replace(/calculate|compute|solve|find/gi, "");
+    s = s.replace(/triangle area|area of triangle|area triangle/gi, "triangle area");
+    s = s.replace(/median of|median/gi, "median");
+    s = s.replace(/prime\s*or\s*not|is prime/gi, "isprime");
+    s = s.replace(/nth prime|the\s*(\d+)(?:st|nd|rd|th)\s*prime/gi, "nthprime");
+    s = s.replace(/\s+/g, " ").trim();
+    return s;
+  }
+
+  function extractNumbers(str) { let nums = []; str.replace(/-?\d+(\.\d+)?/g, m => nums.push(Number(m))); return nums; }
+
+  // median solver
+  function solveMedian(nums) {
+    if(!nums.length) return null;
+    let sorted = [...nums].sort((a,b)=>a-b);
+    let mid = Math.floor(sorted.length/2);
+    if(sorted.length % 2 === 0) return (sorted[mid-1] + sorted[mid])/2;
+    return sorted[mid];
+  }
+
+  // primality & nth prime
+  function isPrimeNum(n) {
+    if(n<2) return false; if(n===2) return true; if(n%2===0) return false;
+    let lim = Math.sqrt(n);
+    for(let i=3; i<=lim; i+=2) if(n%i===0) return false;
+    return true;
+  }
+
+  function nthPrimeFinder(n) {
+    if(n<1) return null;
+    let count=0, cand=1;
+    while(count < n) { cand++; if(isPrimeNum(cand)) count++; }
+    return cand;
+  }
+
+  // linear equation solver  ax + b = c   or similar pattern
+  function solveLinearEquation(eq) {
+    let s = eq.replace(/\s/g, "");
+    let sides = s.split("=");
+    if(sides.length !== 2) return null;
+    let left = sides[0], right = sides[1];
+    function evalX(expr, xVal) {
+      let sub = expr.replace(/x/gi, `(${xVal})`);
+      try { return Function('"use strict"; return ('+sub+')')(); } catch(e){ return NaN; }
+    }
+    let f0 = evalX(left,0) - evalX(right,0);
+    let f1 = evalX(left,1) - evalX(right,1);
+    let a = f1 - f0, b = f0;
+    if(Math.abs(a) < 1e-9) return (Math.abs(b) < 1e-9) ? "infinite solutions" : "no solution";
+    let solution = -b/a;
+    return `x = ${formatNum(solution)}`;
+  }
+
+  // triangle area handler (base-height, sides, coordinates)
+  function handleTriangleRequest(text) {
+    let lower = text.toLowerCase();
+    let nums = extractNumbers(text);
+    if(lower.includes("base") && lower.includes("height") && nums.length>=2) {
+      let [base, height] = [nums[0], nums[1]];
+      let area = 0.5 * base * height;
+      return `📐 Triangle area (base=${base}, height=${height}) = ½ × base × height = ${formatNum(area)}`;
+    }
+    if(nums.length >= 3 && (lower.includes("side") || lower.includes("sides") || lower.match(/\d+,\d+,\d+/))) {
+      let [a,b,c] = nums;
+      let s = (a+b+c)/2;
+      let area = Math.sqrt(Math.max(0, s*(s-a)*(s-b)*(s-c)));
+      return `📐 Heron's formula (sides ${a},${b},${c}) → area = ${formatNum(area)}`;
+    }
+    let coordMatch = text.match(/\((\-?\d+\.?\d*)\s*,\s*(\-?\d+\.?\d*)\)\s*[,;]\s*\((\-?\d+\.?\d*)\s*,\s*(\-?\d+\.?\d*)\)\s*[,;]\s*\((\-?\d+\.?\d*)\s*,\s*(\-?\d+\.?\d*)\)/);
+    if(coordMatch) {
+      let x1=Number(coordMatch[1]), y1=Number(coordMatch[2]), x2=Number(coordMatch[3]), y2=Number(coordMatch[4]), x3=Number(coordMatch[5]), y3=Number(coordMatch[6]);
+      let area = 0.5 * Math.abs(x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2));
+      return `📐 Shoelace area = ${formatNum(area)}`;
+    }
+    return null;
+  }
+
+  // main AI interpretation engine with multiple candidate suggestions (auto-correct wording)
+  function generateCandidates(raw) {
+    let norm = normalizeQuestion(raw);
+    let candidates = [];
+    // median detection
+    let medianMatch = norm.match(/median[\s:]*([\d\s,]+)/i);
+    if(medianMatch || norm.includes("median")) {
+      let nums = extractNumbers(raw);
+      if(nums.length) candidates.push({ type: "median", data: nums, label: `📊 Median of [${nums.join(", ")}]` });
+    }
+    // prime check
+    let primeCheckNum = norm.match(/isprime\s*(\d+)/i) || norm.match(/(\d+)\s*prime/i);
+    if(primeCheckNum) {
+      let n = Number(primeCheckNum[1]);
+      if(!isNaN(n)) candidates.push({ type: "prime", data: n, label: `🔢 Is ${n} prime?` });
+    }
+    // nth prime
+    let nthMatch = norm.match(/nthprime\s*(\d+)/i) || norm.match(/(\d+)(?:st|nd|rd|th)\s*prime/i);
+    if(nthMatch) {
+      let idx = Number(nthMatch[1]);
+      candidates.push({ type: "nthprime", data: idx, label: `🔢 ${idx}th prime number` });
+    }
+    // triangle area
+    let tri = handleTriangleRequest(raw);
+    if(tri) candidates.push({ type: "triangle", data: tri, label: `📐 Triangle area interpretation` });
+    // equation solving (linear)
+    if(raw.includes("=") && !raw.toLowerCase().includes("area")) {
+      let sol = solveLinearEquation(raw);
+      if(sol) candidates.push({ type: "equation", data: sol, label: `🧮 Solve: ${raw}` });
+    }
+    // arithmetic expression
+    let arithmeticExpr = raw.replace(/[^0-9+\-*/%.()]/g, "");
+    if(arithmeticExpr && /[0-9]/.test(arithmeticExpr)) {
+      try {
+        let ev = Function('"use strict"; return ('+arithmeticExpr+')')();
+        if(isFinite(ev)) candidates.push({ type: "arithmetic", data: formatNum(ev), label: `🧾 Compute: ${arithmeticExpr} = ${formatNum(ev)}` });
+      } catch(e) {}
+    }
+    // default clarification
+    if(candidates.length === 0) candidates.push({ type: "clarify", label: "💡 Try: 'median 12,8,15', 'triangle area base 7 height 9', 'solve 4x-2=10', 'is 97 prime?'" });
+    return candidates.slice(0,5);
+  }
+
+  function renderCandidates(candidates) {
+    suggestionZone.innerHTML = "";
+    if(!candidates.length) return;
+    for(let cand of candidates) {
+      let chip = document.createElement("div");
+      chip.className = "suggestion-card";
+      chip.innerHTML = `<span>${escapeHtml(cand.label)}</span>
+                        <button class="yes-suggest" data-cand='${JSON.stringify(cand)}'>✔ Yes</button>
+                        <button class="no-suggest" data-remove>✖ No</button>`;
+      suggestionZone.appendChild(chip);
+    }
+    document.querySelectorAll(".yes-suggest").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        let candObj = JSON.parse(btn.getAttribute("data-cand"));
+        executeCandidate(candObj);
+        suggestionZone.innerHTML = "";
+      });
+    });
+    document.querySelectorAll(".no-suggest").forEach(btn => {
+      btn.addEventListener("click", (e) => { btn.closest(".suggestion-card")?.remove(); });
+    });
+  }
+
+  function executeCandidate(cand) {
+    let output = "";
+    if(cand.type === "median") {
+      let med = solveMedian(cand.data);
+      output = `📌 Median = ${formatNum(med)}`;
+    } else if(cand.type === "prime") {
+      let primeBool = isPrimeNum(cand.data);
+      output = `${cand.data} is ${primeBool ? "✅ prime" : "❌ composite / not prime"}.`;
+    } else if(cand.type === "nthprime") {
+      let p = nthPrimeFinder(cand.data);
+      output = `The ${cand.data}th prime number is ${p}.`;
+    } else if(cand.type === "triangle") {
+      output = cand.data;
+    } else if(cand.type === "equation") {
+      output = cand.data;
+    } else if(cand.type === "arithmetic") {
+      output = `Result: ${cand.data}`;
+    } else {
+      output = cand.label;
+    }
+    answerArea.innerHTML = `<strong>✨ AI answer:</strong><br>${escapeHtml(output)}`;
+    qaHistory.unshift({ q: userQuery.value, a: output.slice(0,90) });
+    if(qaHistory.length > 30) qaHistory.pop();
+    renderQaHistory();
+    lastAns = (typeof output === "string" && output.match(/\d+(\.\d+)?/)) ? parseFloat(output.match(/\d+(\.\d+)?/)[0]) : lastAns;
+  }
+
+  function renderQaHistory() {
+    qaHistoryContainer.innerHTML = "";
+    for(let item of qaHistory.slice(0, 20)) {
+      let div = document.createElement("div");
+      div.className = "qa-entry";
+      div.innerHTML = `<span style="flex:1; overflow:hidden;">❓ ${escapeHtml(item.q.slice(0,60))}</span><span style="color:#90f7ec;">➡ ${escapeHtml(item.a.slice(0,45))}</span>`;
+      div.addEventListener("click", () => { userQuery.value = item.q; processQuery(); });
+      qaHistoryContainer.appendChild(div);
+    }
+  }
+
+  function processQuery() {
+    let raw = userQuery.value.trim();
+    if(!raw) { answerArea.innerHTML = "⚠️ Enter a math question."; return; }
+    let candidates = generateCandidates(raw);
+    if(candidates.length === 1 && candidates[0].type !== "clarify") {
+      executeCandidate(candidates[0]);
+      suggestionZone.innerHTML = "";
+    } else {
+      renderCandidates(candidates);
+      answerArea.innerHTML = `🤖 AI found ${candidates.length} interpretation(s). Click "Yes" on the right one.`;
+    }
+  }
+
+  askBtn.addEventListener("click", processQuery);
+  userQuery.addEventListener("keypress", (e) => { if(e.key === "Enter") processQuery(); });
+  renderQaHistory();
+  answerArea.innerHTML = "✨ Type a question — AI will propose corrected interpretations. Supports median, triangle area, primes, nth prime, linear equations, arithmetic.";
+</script>
+</body>
+</html>
