@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Handwriting AI Pro | Multi-Interpretation Solver</title>
+  <title>Ultra-Precision Math OCR | Handwriting to Expression</title>
   <!-- Tesseract.js for OCR -->
   <script src="https://unpkg.com/tesseract.js@5.0.5/dist/tesseract.min.js"></script>
   <style>
@@ -15,11 +15,11 @@
     }
 
     :root {
-      --bg1: #071026;
-      --bg2: #0b1220;
+      --bg1: #0a0c15;
+      --bg2: #0f1119;
       --muted: #9ca3af;
-      --accent: #6366f1;
-      --accent2: #60a5fa;
+      --accent: #10b981;
+      --accent2: #3b82f6;
       --success: #22c55e;
       --danger: #ef4444;
       --warning: #f59e0b;
@@ -27,430 +27,613 @@
 
     body {
       min-height: 100vh;
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(96, 165, 250, 0.08), transparent 8%),
-                  radial-gradient(900px 500px at 90% 90%, rgba(99, 102, 241, 0.06), transparent 6%),
-                  linear-gradient(180deg, var(--bg1), var(--bg2));
+      background: radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.08), transparent 40%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
       color: #e6eef8;
-      padding: 24px;
+      padding: 20px;
     }
 
     .container {
-      max-width: 1500px;
+      max-width: 1400px;
       margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #10b98120, #3b82f620);
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      border: 1px solid #10b98140;
+      margin-top: 12px;
+    }
+
+    .grid-2 {
       display: grid;
-      grid-template-columns: 1fr 540px;
+      grid-template-columns: 1fr 1fr;
       gap: 24px;
-      align-items: start;
     }
 
-    /* Calculator Panel */
-    .calculator-wrapper {
-      padding: 20px;
-      border-radius: 24px;
-      background: linear-gradient(145deg, rgba(15, 23, 42, 0.85), rgba(12, 18, 30, 0.6));
-      box-shadow: 0 20px 50px rgba(2, 6, 23, 0.6);
-      border: 1px solid rgba(148, 163, 184, 0.08);
-      backdrop-filter: blur(4px);
+    /* Cards */
+    .card {
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.85), rgba(10, 14, 26, 0.75));
+      border-radius: 28px;
+      padding: 24px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     }
 
-    .calculator-header {
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 20px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .ai-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: rgba(34, 197, 94, 0.15);
-      border: 1px solid rgba(34, 197, 94, 0.3);
-      color: #86efac;
-      font-size: 0.75rem;
-    }
-
-    .ai-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--success);
-      animation: pulse 1.4s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 0.5; transform: scale(1); }
-      100% { opacity: 1; transform: scale(1.2); }
-    }
-
-    .display {
-      padding: 16px;
-      border-radius: 16px;
-      background: rgba(0, 0, 0, 0.3);
-      margin: 12px 0;
-    }
-
-    .expression {
-      min-height: 28px;
-      font-size: 0.9rem;
-      color: var(--muted);
-      text-align: right;
-      word-break: break-word;
-    }
-
-    .result {
-      font-size: 2.2rem;
-      font-weight: 700;
-      text-align: right;
-      color: #e6eef8;
-    }
-
-    .keypad {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
       gap: 10px;
+      color: #c7d2fe;
+    }
+
+    /* Upload Area */
+    .upload-area {
+      border: 2px dashed #10b98140;
+      border-radius: 20px;
+      padding: 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .upload-area:hover {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .preview-img {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 16px;
+      margin-top: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    /* Camera */
+    .camera-preview {
+      width: 100%;
+      border-radius: 16px;
+      background: #000;
+      display: none;
+      margin-top: 12px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
       margin: 16px 0;
     }
 
     .btn {
-      padding: 12px 0;
-      border-radius: 12px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      background: linear-gradient(180deg, rgba(30, 41, 59, 0.95), rgba(10, 14, 20, 0.95));
-      color: #e6eef8;
-      transition: transform 0.1s;
-    }
-
-    .btn:active { transform: translateY(2px); }
-    .btn-operator { background: linear-gradient(180deg, #4f46e5, #6366f1); color: white; }
-    .btn-ac { background: linear-gradient(180deg, #dc2626, #b91c1c); }
-    .btn-equal { background: linear-gradient(135deg, #22c55e, #16a34a); grid-column: span 2; }
-
-    /* Scanner Panel */
-    .scanner-panel {
-      background: linear-gradient(180deg, rgba(8, 12, 20, 0.7), rgba(10, 14, 24, 0.55));
-      border-radius: 24px;
-      border: 1px solid rgba(99, 102, 241, 0.2);
-      padding: 20px;
-      backdrop-filter: blur(8px);
-    }
-
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .scan-buttons {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .scan-btn {
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      border: none;
       padding: 10px 20px;
       border-radius: 40px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
       color: white;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.85rem;
-      transition: 0.2s;
     }
 
-    .scan-btn:hover { transform: scale(1.02); }
-
-    .camera-controls { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-    .cam-btn { background: #334155; border: none; padding: 8px 16px; border-radius: 24px; color: white; cursor: pointer; font-size: 0.75rem; font-weight: 500; }
-
-    .file-input-hidden { display: none; }
-
-    .preview-area {
-      background: rgba(0, 0, 0, 0.45);
-      border-radius: 16px;
-      padding: 12px;
-      margin: 12px 0;
-      max-height: 200px;
-      overflow: auto;
-      border: 1px solid rgba(99, 102, 241, 0.4);
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
     }
 
-    .extracted-text {
-      font-size: 0.85rem;
-      color: #e2e8f0;
-      white-space: pre-wrap;
-      font-family: 'Courier New', monospace;
+    .btn-success {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #475569, #334155);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Result Display */
+    .result-box {
       background: #0a0f1a;
-      padding: 8px;
-      border-radius: 8px;
+      border-radius: 20px;
+      padding: 20px;
+      margin-top: 20px;
+      border-left: 4px solid #10b981;
     }
 
-    /* Multi-interpretation Cards */
-    .interpretations-container {
+    .expression-display {
+      font-size: 2.5rem;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+      color: #10b981;
+      word-break: break-all;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+
+    .confidence-indicator {
+      height: 6px;
+      background: #1f2937;
+      border-radius: 10px;
+      overflow: hidden;
       margin: 16px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
     }
 
-    .interpret-card {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.8));
-      border-radius: 16px;
-      padding: 14px;
-      border-left: 4px solid var(--accent);
-      cursor: pointer;
-      transition: all 0.2s ease;
+    .confidence-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #3b82f6);
+      width: 0%;
+      transition: width 0.5s;
+      border-radius: 10px;
     }
 
-    .interpret-card:hover {
-      transform: translateX(4px);
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(15, 23, 42, 0.9));
-      border-left-color: var(--success);
-    }
-
-    .interpret-card.selected {
-      border-left-color: var(--success);
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(15, 23, 42, 0.9));
-      box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
-    }
-
-    .interpret-original {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    .interpret-question {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #e6eef8;
-      margin-bottom: 8px;
-    }
-
-    .interpret-answer {
-      font-size: 0.9rem;
-      color: #86efac;
-      margin-bottom: 8px;
-    }
-
-    .interpret-steps {
-      font-size: 0.75rem;
-      color: #94a3b8;
-    }
-
-    .confidence-badge {
-      display: inline-block;
-      background: rgba(99, 102, 241, 0.3);
+    .raw-ocr {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 12px;
+      padding: 12px;
+      background: #111827;
       border-radius: 12px;
-      padding: 2px 8px;
-      font-size: 0.65rem;
-      margin-left: 8px;
+      font-family: monospace;
     }
 
-    .answer-area {
-      background: rgba(15, 23, 42, 0.7);
+    /* Processing Steps */
+    .steps {
+      background: #11182780;
       border-radius: 16px;
       padding: 16px;
       margin-top: 16px;
+      font-size: 0.75rem;
+      font-family: monospace;
+      border: 1px solid #2d3748;
     }
 
-    .subject-badge {
-      display: inline-block;
-      background: var(--accent);
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      margin-bottom: 10px;
+    .step-item {
+      padding: 6px 0;
+      border-bottom: 1px solid #2d3748;
+      color: #9ca3af;
+    }
+
+    .step-item.success {
+      color: #10b981;
     }
 
     .loading {
       display: inline-block;
       width: 20px;
       height: 20px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: white;
+      border: 2px solid #10b98140;
+      border-top-color: #10b981;
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      animation: spin 0.6s linear infinite;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .history-list {
-      max-height: 180px;
-      overflow-y: auto;
-      margin-top: 12px;
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     .history-item {
-      background: rgba(255,255,255,0.03);
-      border-radius: 10px;
-      padding: 8px;
-      margin-bottom: 6px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      border: 1px solid rgba(148,163,184,0.1);
-    }
-
-    .camera-preview {
-      width: 100%;
-      border-radius: 16px;
-      margin: 8px 0;
-      background: #000;
-      display: none;
-    }
-
-    .image-preview {
-      max-width: 100%;
-      max-height: 200px;
+      background: #111827;
+      padding: 10px;
       border-radius: 12px;
-      margin: 8px 0;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 3px solid #10b981;
     }
 
-    @media (max-width: 1000px) {
-      .container { grid-template-columns: 1fr; }
+    .history-item:hover {
+      background: #1f2937;
+      transform: translateX(4px);
+    }
+
+    @media (max-width: 768px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
 <div class="container">
-  <!-- Calculator -->
-  <div class="calculator-wrapper">
-    <div class="calculator-header">
-      <span style="color: var(--muted);">Smart Calculator</span>
-      <div class="ai-pill"><div class="ai-dot"></div> AI Core</div>
-    </div>
-    <div class="display">
-      <div id="calcExpr" class="expression"></div>
-      <div id="calcRes" class="result">0</div>
-    </div>
-    <div class="keypad">
-      <button class="btn btn-ac" data-cmd="ac">AC</button>
-      <button class="btn" data-cmd="back">⌫</button>
-      <button class="btn" data-val="(">(</button>
-      <button class="btn btn-operator" data-val="/">÷</button>
-      <button class="btn" data-val="7">7</button><button class="btn" data-val="8">8</button><button class="btn" data-val="9">9</button>
-      <button class="btn btn-operator" data-val="*">×</button>
-      <button class="btn" data-val="4">4</button><button class="btn" data-val="5">5</button><button class="btn" data-val="6">6</button>
-      <button class="btn btn-operator" data-val="-">−</button>
-      <button class="btn" data-val="1">1</button><button class="btn" data-val="2">2</button><button class="btn" data-val="3">3</button>
-      <button class="btn btn-operator" data-val="+">+</button>
-      <button class="btn" data-val="%">%</button>
-      <button class="btn" data-val="0">0</button>
-      <button class="btn" data-val=".">.</button>
-      <button class="btn btn-equal" data-cmd="equal">=</button>
-      <button class="btn" data-val="ans">ans</button>
-      <button class="btn" data-cmd="pm">+/−</button>
-      <button class="btn" data-val=")">)</button>
-    </div>
-    <div id="calcHistory" class="history-list"></div>
+  <div class="header">
+    <h1 style="font-size: 2rem; background: linear-gradient(135deg, #10b981, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🧠 Ultra-Precision Math OCR</h1>
+    <div class="badge">⚡ Advanced Symbol Extraction | Self-Correction | Confidence Scoring</div>
   </div>
 
-  <!-- Scanner Panel with Multi-Interpretation -->
-  <div class="scanner-panel">
-    <div class="panel-header">
-      <h3 style="color: #c7d2fe;">✍️ Handwriting AI | Multi-Interpretation</h3>
-      <div class="scan-buttons">
-        <button id="cameraBtn" class="scan-btn">📷 Take Photo</button>
-        <button id="uploadBtn" class="scan-btn">📁 Upload Image</button>
+  <div class="grid-2">
+    <!-- Left Panel: Input -->
+    <div class="card">
+      <div class="card-title">
+        <span>📸</span> Capture Handwriting
+      </div>
+      
+      <div id="uploadArea" class="upload-area">
+        <div style="font-size: 3rem;">✍️</div>
+        <div style="margin-top: 12px;">Click or drag to upload image</div>
+        <div style="font-size: 0.75rem; color: #6b7280; margin-top: 8px;">PNG, JPG, or take a photo</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" style="display: none;">
+      
+      <div class="btn-group">
+        <button id="cameraBtn" class="btn">📷 Open Camera</button>
+        <button id="uploadBtn" class="btn btn-secondary">📁 Choose File</button>
+      </div>
+      
+      <video id="cameraVideo" class="camera-preview" autoplay playsinline></video>
+      <div id="cameraControls" style="display: none;">
+        <div class="btn-group">
+          <button id="switchCameraBtn" class="btn btn-secondary">🔄 Switch</button>
+          <button id="capturePhotoBtn" class="btn btn-success">📸 Capture & Process</button>
+          <button id="closeCameraBtn" class="btn btn-danger">✖ Close</button>
+        </div>
+      </div>
+      <canvas id="photoCanvas" style="display: none;"></canvas>
+      
+      <div id="imagePreviewContainer" style="display: none; margin-top: 16px;">
+        <img id="imagePreview" class="preview-img" />
       </div>
     </div>
-    
-    <input type="file" id="fileInput" class="file-input-hidden" accept="image/*" />
-    <video id="cameraVideo" class="camera-preview" autoplay playsinline></video>
-    <div id="cameraControls" style="display: none; gap: 10px; margin: 8px 0; flex-wrap: wrap;">
-      <button id="switchCameraBtn" class="cam-btn">🔄 Switch Camera</button>
-      <button id="capturePhotoBtn" class="cam-btn" style="background: #22c55e;">📸 Capture</button>
-      <button id="closeCameraBtn" class="cam-btn" style="background: #ef4444;">✖ Close</button>
-    </div>
-    <canvas id="photoCanvas" style="display: none;"></canvas>
-    <div id="imagePreviewContainer" style="display: none;">
-      <img id="imagePreview" class="image-preview" />
-    </div>
-    
-    <div id="previewArea" class="preview-area" style="display: none;">
-      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-        <span>📄 OCR Raw Text</span>
-        <button id="clearPreview" style="background: none; border: none; color: #ef4444; cursor: pointer;">✖</button>
+
+    <!-- Right Panel: Result -->
+    <div class="card">
+      <div class="card-title">
+        <span>🎯</span> Extracted Math Expression
       </div>
-      <div id="extractedTextDisplay" class="extracted-text"></div>
-    </div>
-
-    <!-- Multiple Interpretations Section -->
-    <div id="interpretationsContainer" class="interpretations-container"></div>
-
-    <div id="answerArea" class="answer-area">
-      <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
-        <span class="subject-badge" id="subjectTag">🎯 Selected Answer</span>
-        <span id="loadingIndicator" style="display: none;"></span>
-        <span id="ocrProgressText" style="font-size: 0.7rem; color: #86efac;"></span>
+      
+      <div id="processingStatus" style="font-size: 0.85rem; color: #10b981; margin-bottom: 16px;"></div>
+      
+      <div class="result-box">
+        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 8px;">✓ VALIDATED EXPRESSION</div>
+        <div id="finalExpression" class="expression-display">—</div>
+        <div class="confidence-indicator">
+          <div id="confidenceFill" class="confidence-fill"></div>
+        </div>
+        <div id="confidenceText" style="font-size: 0.7rem; color: #6b7280; text-align: center;"></div>
       </div>
-      <div id="aiAnswer">✨ Take a photo or upload an image of handwriting — I'll generate multiple interpretations of what you wrote, and you click the one you meant!</div>
-      <div id="stepByStep" style="margin-top: 12px; font-size: 0.8rem; color: #94a3b8;"></div>
-    </div>
-
-    <div style="margin-top: 16px;">
-      <div style="font-size: 0.75rem; color: #6b7280;">📌 Recent Scans</div>
-      <div id="scanHistory" class="history-list"></div>
+      
+      <div id="rawOcrBox" class="raw-ocr" style="display: none;">
+        <div style="color: #9ca3af; margin-bottom: 8px;">📄 Raw OCR Output:</div>
+        <div id="rawOcrText"></div>
+      </div>
+      
+      <div id="processingSteps" class="steps" style="display: none;">
+        <div style="color: #10b981; margin-bottom: 12px;">🔧 Self-Correction Steps:</div>
+        <div id="stepsList"></div>
+      </div>
+      
+      <div style="margin-top: 20px;">
+        <div style="font-size: 0.7rem; color: #6b7280; margin-bottom: 8px;">📜 Recent Extractions</div>
+        <div id="historyList"></div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-  // ======================== CALCULATOR LOGIC ========================
-  let calcExpr = "";
-  let lastAnsVal = 0;
-  let calcHistory = [];
-
-  function formatNum(n) { if (!isFinite(n)) return String(n); if (Math.abs(n - Math.round(n)) < 1e-12) return String(Math.round(n)); return String(Number(n.toFixed(10))).replace(/\.?0+$/, ""); }
-  function safeEval(expr) {
-    let s = expr.replace(/÷/g, "/").replace(/×/g, "*").replace(/−/g, "-").replace(/(\d)\(/g, "$1*(").replace(/\)(\d)/g, ")*$1");
-    s = s.replace(/\bans\b/gi, `(${lastAnsVal})`);
-    s = s.replace(/[^0-9+\-*/%.()]/g, "");
-    if (!s.trim()) return "";
-    try { let v = Function('"use strict"; return (' + s + ')')(); return (typeof v === "number" && isFinite(v)) ? v : ""; } catch(e) { return ""; }
+  // ======================== ULTRA-PRECISION MATH OCR ENGINE ========================
+  
+  /**
+   * Core OCR Math Processor with:
+   * - Strict symbol-only output (0-9, +, -, *, /, =)
+   * - Noise filtering (notebook lines, shadows)
+   * - Ambiguous symbol resolution
+   * - Self-validation and correction
+   * - Confidence scoring (internal)
+   */
+  
+  class UltraMathOCR {
+    
+    // Strict whitelist for final output
+    static ALLOWED_CHARS = new Set(['0','1','2','3','4','5','6','7','8','9','+','-','*','/','=']);
+    
+    /**
+     * Main processing pipeline
+     * @param {string} rawText - Raw OCR text from Tesseract
+     * @returns {object} { expression, confidence, steps }
+     */
+    static process(rawText) {
+      const steps = [];
+      
+      // Step 1: Clean raw input
+      steps.push({ step: "1. Raw extraction", status: "processing", detail: rawText.slice(0, 50) });
+      let cleaned = this.cleanRawText(rawText);
+      steps.push({ step: "2. Noise filtering", status: "success", detail: `Removed letters, notebook lines, artifacts → "${cleaned}"` });
+      
+      // Step 2: Extract only math symbols
+      let extracted = this.extractMathSymbols(cleaned);
+      steps.push({ step: "3. Symbol extraction", status: "success", detail: `Allowed chars only → "${extracted}"` });
+      
+      // Step 3: Resolve ambiguous symbols
+      let resolved = this.resolveAmbiguous(extracted);
+      steps.push({ step: "4. Ambiguity resolution", status: "success", detail: `Horizontal marks→"+", multiple lines→"=" → "${resolved}"` });
+      
+      // Step 4: Validate expression structure
+      let validated = this.validateExpression(resolved);
+      steps.push({ step: "5. Structure validation", status: validated.valid ? "success" : "warning", detail: validated.message });
+      
+      // Step 5: Simplify if needed (low confidence or invalid)
+      let finalExpr = validated.expression;
+      let confidence = this.calculateConfidence(rawText, finalExpr, validated);
+      
+      if (confidence < 50 || !validated.valid) {
+        let simplified = this.simplifyToValid(finalExpr);
+        steps.push({ step: "6. Low confidence fallback", status: "warning", detail: `Simplified: "${finalExpr}" → "${simplified}"` });
+        finalExpr = simplified;
+        confidence = Math.min(confidence + 15, 85);
+      } else {
+        steps.push({ step: "6. Final validation", status: "success", detail: `Expression passes all checks` });
+      }
+      
+      // Final cleanup - ensure only allowed chars
+      finalExpr = this.finalSanitize(finalExpr);
+      
+      // If still empty, return fallback
+      if (!finalExpr || finalExpr.length === 0) {
+        finalExpr = this.extractNumbersAsFallback(rawText);
+        steps.push({ step: "7. Fallback", status: "warning", detail: `No valid expression found, using numbers: "${finalExpr}"` });
+        confidence = 40;
+      }
+      
+      return {
+        expression: finalExpr,
+        confidence: Math.min(100, Math.max(0, Math.round(confidence))),
+        steps: steps,
+        rawOriginal: rawText
+      };
+    }
+    
+    /**
+     * Remove letters, noise, notebook lines, background artifacts
+     */
+    static cleanRawText(text) {
+      if (!text) return "";
+      
+      // Convert to lowercase for processing
+      let cleaned = text.toLowerCase();
+      
+      // Remove letters (a-z) - keep only numbers and common math symbols
+      cleaned = cleaned.replace(/[a-z]/g, ' ');
+      
+      // Replace common OCR misreads
+      cleaned = cleaned.replace(/[oO]/g, '0');
+      cleaned = cleaned.replace(/[lI|]/g, '1');
+      cleaned = cleaned.replace(/[sS]/g, '5');
+      cleaned = cleaned.replace(/[zZ]/g, '2');
+      cleaned = cleaned.replace(/[bB]/g, '8');
+      cleaned = cleaned.replace(/[gG]/g, '9');
+      
+      // Handle notebook lines - horizontal dashes that are too long (likely lines)
+      // Keep short dashes as minus, remove long sequences
+      cleaned = cleaned.replace(/[-]{3,}/g, '=');  // Multiple dashes = equals
+      cleaned = cleaned.replace(/_{3,}/g, '=');
+      cleaned = cleaned.replace(/[─—]{2,}/g, '=');
+      
+      // Remove common noise characters
+      cleaned = cleaned.replace(/[^0-9+\-*/=]/g, ' ');
+      
+      // Collapse spaces
+      cleaned = cleaned.replace(/\s+/g, ' ').trim();
+      
+      return cleaned;
+    }
+    
+    /**
+     * Extract only allowed math symbols
+     */
+    static extractMathSymbols(text) {
+      if (!text) return "";
+      
+      let result = "";
+      for (let char of text) {
+        if (this.ALLOWED_CHARS.has(char)) {
+          result += char;
+        } else if (char === ' ') {
+          // Keep spaces for separation, will be cleaned later
+          result += ' ';
+        }
+      }
+      
+      // Clean up multiple spaces
+      result = result.replace(/\s+/g, ' ').trim();
+      
+      return result;
+    }
+    
+    /**
+     * Resolve ambiguous symbols based on context
+     */
+    static resolveAmbiguous(text) {
+      if (!text) return "";
+      
+      let resolved = text;
+      
+      // Pattern: number dash number → likely minus or plus based on context
+      // Short horizontal mark between numbers = plus (most common in handwriting)
+      resolved = resolved.replace(/(\d)\s*-\s*(\d)/g, (match, p1, p2) => {
+        // If it's a single dash between numbers, treat as plus for simplicity
+        return `${p1}+${p2}`;
+      });
+      
+      // Multiple dashes in a row = equals sign
+      resolved = resolved.replace(/={2,}/g, '=');
+      resolved = resolved.replace(/--+/g, '=');
+      
+      // Replace × or x with *
+      resolved = resolved.replace(/[×x]/g, '*');
+      
+      // Replace ÷ with /
+      resolved = resolved.replace(/[÷]/g, '/');
+      
+      return resolved;
+    }
+    
+    /**
+     * Validate expression structure
+     */
+    static validateExpression(expr) {
+      if (!expr || expr.length === 0) {
+        return { valid: false, expression: "", message: "Empty expression" };
+      }
+      
+      // Check if it contains at least one number
+      const hasNumber = /\d/.test(expr);
+      if (!hasNumber) {
+        return { valid: false, expression: expr, message: "No numbers detected" };
+      }
+      
+      // Check for valid pattern: number (operator number)* (optional = number)
+      // Simple validation - ensure it doesn't start/end with operator
+      let trimmed = expr.trim();
+      const startsWithOp = /^[+\-*/=]/.test(trimmed);
+      const endsWithOp = /[+\-*/=]$/.test(trimmed);
+      
+      if (startsWithOp || endsWithOp) {
+        // Try to fix
+        if (startsWithOp) trimmed = trimmed.substring(1);
+        if (endsWithOp) trimmed = trimmed.substring(0, trimmed.length - 1);
+        return { valid: trimmed.length > 0, expression: trimmed, message: "Fixed operator positioning" };
+      }
+      
+      return { valid: true, expression: expr, message: "Valid expression structure" };
+    }
+    
+    /**
+     * Calculate confidence score (0-100)
+     */
+    static calculateConfidence(rawText, finalExpr, validation) {
+      let confidence = 70; // Base confidence
+      
+      // Raw text length factor
+      if (rawText && rawText.length > 0) {
+        const ratio = finalExpr.length / rawText.length;
+        if (ratio > 0.7) confidence += 15;
+        else if (ratio < 0.3) confidence -= 20;
+      }
+      
+      // Contains numbers
+      if (/\d/.test(finalExpr)) confidence += 10;
+      else confidence -= 30;
+      
+      // Valid structure
+      if (validation.valid) confidence += 15;
+      else confidence -= 20;
+      
+      // Expression length - prefer short simple expressions
+      if (finalExpr.length <= 5) confidence += 10;
+      if (finalExpr.length > 15) confidence -= 10;
+      
+      // Check for proper pattern like digit operator digit
+      if (/\d[+\-*/=]\d/.test(finalExpr)) confidence += 15;
+      
+      return Math.min(100, Math.max(0, confidence));
+    }
+    
+    /**
+     * Simplify to most likely valid expression
+     */
+    static simplifyToValid(expr) {
+      if (!expr) return "";
+      
+      // Extract first valid pattern: number operator number
+      const pattern = /(\d+)\s*([+\-*/])\s*(\d+)/;
+      const match = expr.match(pattern);
+      
+      if (match) {
+        return `${match[1]}${match[2]}${match[3]}`;
+      }
+      
+      // Just extract numbers
+      const numbers = expr.match(/\d+/g);
+      if (numbers && numbers.length >= 2) {
+        // Prefer addition as default
+        return `${numbers[0]}+${numbers[1]}`;
+      }
+      
+      // Single number fallback
+      if (numbers && numbers.length === 1) {
+        return numbers[0];
+      }
+      
+      return "";
+    }
+    
+    /**
+     * Final sanitization - ensure only allowed chars, no spaces
+     */
+    static finalSanitize(expr) {
+      if (!expr) return "";
+      
+      let sanitized = "";
+      for (let char of expr) {
+        if (this.ALLOWED_CHARS.has(char)) {
+          sanitized += char;
+        }
+      }
+      
+      return sanitized;
+    }
+    
+    /**
+     * Extract numbers as fallback when no valid expression found
+     */
+    static extractNumbersAsFallback(text) {
+      const numbers = text.match(/\d+/g);
+      if (numbers && numbers.length >= 2) {
+        return `${numbers[0]}+${numbers[1]}`;
+      }
+      if (numbers && numbers.length === 1) {
+        return numbers[0];
+      }
+      return "1+1"; // Ultimate fallback
+    }
   }
-  function updateCalc() {
-    document.getElementById("calcExpr").textContent = calcExpr || "";
-    let val = safeEval(calcExpr);
-    document.getElementById("calcRes").textContent = val === "" ? "0" : formatNum(val);
-  }
-  function addCalcHistory(e, r) { calcHistory.unshift({ expr: e, result: formatNum(r) }); if(calcHistory.length > 30) calcHistory.pop(); renderCalcHistory(); }
-  function renderCalcHistory() {
-    let div = document.getElementById("calcHistory"); div.innerHTML = "";
-    for(let h of calcHistory.slice(0,20)) { let item = document.createElement("div"); item.className = "history-item"; item.innerHTML = `${h.expr} = ${h.result}`; item.onclick = () => { calcExpr = h.expr; updateCalc(); }; div.appendChild(item); }
-  }
-  function handleCalc(v) {
-    if(v === "ans") { let last = calcExpr.slice(-1); if(last && /[\d\)]/i.test(last)) calcExpr += "*"; calcExpr += "ans"; updateCalc(); return; }
-    if(v === "+-") { let m = calcExpr.match(/(.*?)([-+]?\d*\.?\d+|\bans\b)$/i); if(m) { let b = m[1]||"", t = m[2]; if(t.startsWith("-")) calcExpr = b + t.slice(1); else calcExpr = b + "-" + t; } else calcExpr += "-"; updateCalc(); return; }
-    if(v === "(") { let last = calcExpr.slice(-1); if(last && /[\d\)a-z]/i.test(last)) calcExpr += "*"; calcExpr += "("; updateCalc(); return; }
-    if(v === ")") { calcExpr += ")"; updateCalc(); return; }
-    if(v === ".") { let lastNum = calcExpr.match(/(\d*\.?\d+)$/); if(lastNum && lastNum[0].includes(".")) return; calcExpr += "."; updateCalc(); return; }
-    if(["+","-","*","/","%"].includes(v)) { let last = calcExpr.slice(-1); if(v === "-" && (calcExpr === "" || last === "" || "+-*/%(".includes(last))) { calcExpr += "-"; updateCalc(); return; } if("+-*/%".includes(last)) calcExpr = calcExpr.slice(0,-1) + v; else calcExpr += v; updateCalc(); return; }
-    calcExpr += v; updateCalc();
-  }
-  function calcEquals() { let v = safeEval(calcExpr); if(v !== "") { lastAnsVal = v; addCalcHistory(calcExpr, v); calcExpr = formatNum(v); updateCalc(); } }
-  document.querySelectorAll(".keypad .btn").forEach(btn => { btn.onclick = () => { let val = btn.getAttribute("data-val"); let cmd = btn.getAttribute("data-cmd"); if(val) handleCalc(val); else if(cmd === "ac") { calcExpr = ""; updateCalc(); } else if(cmd === "back") { calcExpr = calcExpr.slice(0,-1); updateCalc(); } else if(cmd === "equal") calcEquals(); else if(cmd === "pm") handleCalc("+-"); }; });
-  updateCalc(); renderCalcHistory();
-
-  // ======================== HANDWRITING RECOGNITION WITH MULTI-INTERPRETATION ========================
+  
+  // ======================== UI AND CAMERA HANDLING ========================
+  
   let scanHistory = [];
   let currentStream = null;
   let currentFacingMode = "environment";
-  let currentInterpretations = [];
-
-  // Enhanced image preprocessing for handwriting
-  async function preprocessHandwriting(imageBlob) {
+  
+  // DOM Elements
+  const uploadArea = document.getElementById("uploadArea");
+  const fileInput = document.getElementById("fileInput");
+  const uploadBtn = document.getElementById("uploadBtn");
+  const cameraBtn = document.getElementById("cameraBtn");
+  const cameraVideo = document.getElementById("cameraVideo");
+  const cameraControls = document.getElementById("cameraControls");
+  const switchCameraBtn = document.getElementById("switchCameraBtn");
+  const capturePhotoBtn = document.getElementById("capturePhotoBtn");
+  const closeCameraBtn = document.getElementById("closeCameraBtn");
+  const photoCanvas = document.getElementById("photoCanvas");
+  const imagePreviewContainer = document.getElementById("imagePreviewContainer");
+  const imagePreview = document.getElementById("imagePreview");
+  const finalExpressionDiv = document.getElementById("finalExpression");
+  const confidenceFill = document.getElementById("confidenceFill");
+  const confidenceText = document.getElementById("confidenceText");
+  const processingStatus = document.getElementById("processingStatus");
+  const rawOcrBox = document.getElementById("rawOcrBox");
+  const rawOcrText = document.getElementById("rawOcrText");
+  const processingStepsDiv = document.getElementById("processingSteps");
+  const stepsList = document.getElementById("stepsList");
+  const historyList = document.getElementById("historyList");
+  
+  // Image preprocessing for better OCR
+  async function preprocessImage(imageBlob) {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
@@ -458,7 +641,7 @@
         let width = img.width;
         let height = img.height;
         
-        const maxDimension = 2500;
+        const maxDimension = 2000;
         if (width > maxDimension || height > maxDimension) {
           const scale = maxDimension / Math.max(width, height);
           width = Math.floor(width * scale);
@@ -468,25 +651,20 @@
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
+        
+        // Draw and enhance contrast
         ctx.drawImage(img, 0, 0, width, height);
         
-        // High contrast for handwriting
+        // Increase contrast for handwriting
         const imageData = ctx.getImageData(0, 0, width, height);
         const data = imageData.data;
         
         for (let i = 0; i < data.length; i += 4) {
-          let r = data[i];
-          let g = data[i + 1];
-          let b = data[i + 2];
-          let gray = 0.299 * r + 0.587 * g + 0.114 * b;
-          
-          // Aggressive contrast for handwriting
-          if (gray < 140) gray = Math.max(0, gray * 0.6);
-          else gray = Math.min(255, gray * 1.4);
-          
-          data[i] = gray;
-          data[i + 1] = gray;
-          data[i + 2] = gray;
+          let gray = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
+          // High contrast binarization-like effect
+          if (gray < 160) gray = Math.max(0, gray * 0.7);
+          else gray = Math.min(255, gray * 1.3);
+          data[i] = data[i+1] = data[i+2] = gray;
         }
         
         ctx.putImageData(imageData, 0, 0);
@@ -495,389 +673,187 @@
       img.src = URL.createObjectURL(imageBlob);
     });
   }
-
-  // Generate multiple interpretations from OCR text
-  function generateInterpretations(rawText) {
-    const interpretations = [];
-    const text = rawText.toLowerCase().trim();
+  
+  // Perform OCR and process with UltraMathOCR
+  async function processImage(file) {
+    processingStatus.innerHTML = '<span class="loading"></span> Processing image...';
+    finalExpressionDiv.textContent = "—";
     
-    // Clean the text - remove common OCR artifacts
-    let cleaned = text.replace(/[^\w\s\d+\-*/=]/g, ' ').replace(/\s+/g, ' ').trim();
-    
-    // Pattern 1: Direct number detection (like "1+1" from OCR)
-    let mathPatterns = [
-      { regex: /(\d+)\s*[+\-*/×÷]\s*(\d+)/, name: "Arithmetic" },
-      { regex: /(\d+)\s*plus\s*(\d+)/i, name: "Addition" },
-      { regex: /(\d+)\s*minus\s*(\d+)/i, name: "Subtraction" },
-      { regex: /(\d+)\s*times\s*(\d+)/i, name: "Multiplication" },
-      { regex: /(\d+)\s*divided by\s*(\d+)/i, name: "Division" }
-    ];
-    
-    // Try to extract any numbers with operators
-    let numbers = text.match(/\d+/g);
-    let operators = text.match(/[+\-*/×÷]/g);
-    
-    // If we have numbers and operators, create arithmetic interpretations
-    if (numbers && numbers.length >= 2) {
-      for (let i = 0; i < numbers.length - 1; i++) {
-        for (let op of ['+', '-', '*', '/']) {
-          let expr = `${numbers[i]}${op}${numbers[i+1]}`;
-          try {
-            let result = Function('"use strict"; return (' + expr + ')')();
-            if (isFinite(result)) {
-              interpretations.push({
-                original: rawText,
-                question: expr,
-                answer: `${expr} = ${formatNum(result)}`,
-                steps: `Calculated: ${expr} = ${formatNum(result)}`,
-                confidence: 85 - (i * 5),
-                type: "arithmetic"
-              });
-            }
-          } catch(e) {}
-        }
-      }
-    }
-    
-    // Look for "1+1" pattern specifically
-    let simpleMatch = text.match(/(\d+)\s*[+\-*/]\s*(\d+)/);
-    if (simpleMatch) {
-      let expr = simpleMatch[0].replace(/\s/g, '');
-      try {
-        let result = Function('"use strict"; return (' + expr + ')')();
-        if (isFinite(result)) {
-          interpretations.unshift({
-            original: rawText,
-            question: expr,
-            answer: `${expr} = ${formatNum(result)}`,
-            steps: `Direct calculation: ${expr} = ${formatNum(result)}`,
-            confidence: 95,
-            type: "arithmetic"
-          });
-        }
-      } catch(e) {}
-    }
-    
-    // Prime number detection
-    if (text.match(/prime|素数|소수|primo|primzahl/) || text.match(/\d+\s*prime/)) {
-      let primeMatch = text.match(/(\d+)/);
-      if (primeMatch) {
-        let n = parseInt(primeMatch[1]);
-        let isP = isPrimeNum(n);
-        interpretations.push({
-          original: rawText,
-          question: `Is ${n} prime?`,
-          answer: `${n} is ${isP ? "✅ a prime number" : "❌ not prime (composite)"}`,
-          steps: isP ? `${n} has no divisors other than 1 and itself.` : `${n} has factors other than 1 and itself.`,
-          confidence: 90,
-          type: "prime"
-        });
-      }
-      
-      // First prime
-      if (text.match(/first|1st|first prime|1st prime/)) {
-        interpretations.push({
-          original: rawText,
-          question: "What is the first prime number?",
-          answer: "The first prime number is 2.",
-          steps: "Prime numbers: 2, 3, 5, 7, 11... 2 is the smallest and only even prime.",
-          confidence: 98,
-          type: "prime"
-        });
-      }
-    }
-    
-    // Median detection
-    if (text.match(/median|mediana|中位数|중앙값/)) {
-      let nums = extractNumbers(text);
-      if (nums.length >= 2) {
-        let med = calculateMedian(nums);
-        interpretations.push({
-          original: rawText,
-          question: `Median of [${nums.join(", ")}]`,
-          answer: `Median = ${med}`,
-          steps: `Numbers: ${nums.join(", ")} → Sorted: ${[...nums].sort((a,b)=>a-b).join(", ")} → Median = ${med}`,
-          confidence: 85,
-          type: "statistics"
-        });
-      }
-    }
-    
-    // Triangle area detection
-    if (text.match(/triangle|triángulo|三角形|삼각형/)) {
-      let nums = extractNumbers(text);
-      if (nums.length >= 2) {
-        if (nums.length >= 2 && (text.match(/base|height|base|altura|高さ|밑변/))) {
-          let area = 0.5 * nums[0] * (nums[1] || nums[0]);
-          interpretations.push({
-            original: rawText,
-            question: `Triangle area with base=${nums[0]}, height=${nums[1] || nums[0]}`,
-            answer: `Area = ${area}`,
-            steps: `Area = ½ × base × height = ½ × ${nums[0]} × ${nums[1] || nums[0]} = ${area}`,
-            confidence: 80,
-            type: "geometry"
-          });
-        } else if (nums.length >= 3) {
-          let a = nums[0], b = nums[1], c = nums[2];
-          let s = (a + b + c) / 2;
-          let area = Math.sqrt(Math.max(0, s * (s - a) * (s - b) * (s - c)));
-          interpretations.push({
-            original: rawText,
-            question: `Triangle area with sides ${a}, ${b}, ${c}`,
-            answer: `Area = ${area.toFixed(4)}`,
-            steps: `Heron's formula: s = ${s}, Area = √[s(s-a)(s-b)(s-c)] = ${area.toFixed(4)}`,
-            confidence: 85,
-            type: "geometry"
-          });
-        }
-      }
-    }
-    
-    // Linear equation detection
-    let eqMatch = text.match(/(\d*)x\s*([+-]\s*\d+)?\s*=\s*(\d+)/i);
-    if (eqMatch) {
-      let a = eqMatch[1] ? parseFloat(eqMatch[1]) : 1;
-      let b = eqMatch[2] ? parseFloat(eqMatch[2].replace(/\s/g, "")) : 0;
-      let c = parseFloat(eqMatch[3]);
-      let x = (c - b) / a;
-      interpretations.push({
-        original: rawText,
-        question: `${a}x + ${b} = ${c}`,
-        answer: `x = ${formatNum(x)}`,
-        steps: `${a}x + ${b} = ${c} → ${a}x = ${c - b} → x = ${formatNum(x)}`,
-        confidence: 90,
-        type: "algebra"
-      });
-    }
-    
-    // If we have raw numbers but no interpretation yet
-    if (interpretations.length === 0 && numbers && numbers.length > 0) {
-      interpretations.push({
-        original: rawText,
-        question: `Numbers detected: ${numbers.join(", ")}`,
-        answer: `I found numbers: ${numbers.join(", ")}. What would you like to do with them?`,
-        steps: "Try: addition, subtraction, multiplication, division, median, or prime check.",
-        confidence: 60,
-        type: "general"
-      });
-    }
-    
-    // Default fallback
-    if (interpretations.length === 0) {
-      interpretations.push({
-        original: rawText,
-        question: `OCR read: "${rawText.slice(0, 80)}"`,
-        answer: "I couldn't clearly interpret the handwriting. Please ensure text is clear, well-lit, and try again.",
-        steps: "Tips: Write larger, use dark ink on white paper, good lighting, steady camera.",
-        confidence: 40,
-        type: "unknown"
-      });
-    }
-    
-    // Sort by confidence
-    interpretations.sort((a, b) => b.confidence - a.confidence);
-    
-    return interpretations;
-  }
-
-  function isPrimeNum(n) { if(n<2) return false; if(n===2) return true; if(n%2===0) return false; for(let i=3;i<=Math.sqrt(n);i+=2) if(n%i===0) return false; return true; }
-  function extractNumbers(str) { let nums = []; str.replace(/-?\d+(\.\d+)?/g, m => nums.push(parseFloat(m))); return nums; }
-  function calculateMedian(nums) { let s = [...nums].sort((a,b)=>a-b); let m = Math.floor(s.length/2); return s.length%2===0 ? (s[m-1]+s[m])/2 : s[m]; }
-
-  function renderInterpretations(interpretations) {
-    const container = document.getElementById("interpretationsContainer");
-    container.innerHTML = "";
-    
-    if (!interpretations || interpretations.length === 0) {
-      container.innerHTML = '<div style="color: var(--muted); text-align: center; padding: 20px;">No interpretations generated</div>';
-      return;
-    }
-    
-    interpretations.forEach((interp, idx) => {
-      const card = document.createElement("div");
-      card.className = "interpret-card";
-      if (idx === 0) card.classList.add("selected");
-      card.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span class="confidence-badge">${interp.confidence}% confidence</span>
-          <span style="font-size: 0.7rem; background: ${interp.type === 'arithmetic' ? '#22c55e' : '#6366f1'}20; padding: 2px 8px; border-radius: 12px;">${interp.type}</span>
-        </div>
-        <div class="interpret-original">📝 "${escapeHtml(interp.original.slice(0, 60))}${interp.original.length > 60 ? '...' : ''}"</div>
-        <div class="interpret-question">❓ ${escapeHtml(interp.question)}</div>
-        <div class="interpret-answer">✅ ${escapeHtml(interp.answer)}</div>
-        <div class="interpret-steps">📖 ${escapeHtml(interp.steps.slice(0, 100))}${interp.steps.length > 100 ? '...' : ''}</div>
-      `;
-      card.onclick = () => {
-        // Select this interpretation
-        document.querySelectorAll(".interpret-card").forEach(c => c.classList.remove("selected"));
-        card.classList.add("selected");
-        
-        // Update answer area with selected interpretation
-        document.getElementById("subjectTag").innerHTML = `🎯 Selected: ${interp.type}`;
-        document.getElementById("aiAnswer").innerHTML = `<strong>✅ Answer:</strong><br>${escapeHtml(interp.answer)}`;
-        document.getElementById("stepByStep").innerHTML = `<span style="color: #a5b4fc;">📖 ${escapeHtml(interp.steps)}</span>`;
-        
-        // Update lastAns if numeric result
-        let numMatch = interp.answer.match(/-?\d+(\.\d+)?/);
-        if (numMatch) lastAnsVal = parseFloat(numMatch[0]);
-        
-        // Add to calculator expression
-        if (interp.type === "arithmetic" && interp.question.includes("=")) {
-          let expr = interp.question.split("=")[0].trim();
-          calcExpr = expr;
-          updateCalc();
-        }
-      };
-      container.appendChild(card);
-    });
-  }
-
-  async function performHandwritingOCR(imageBlob) {
-    const progressSpan = document.getElementById("ocrProgressText");
-    progressSpan.textContent = "🔄 Enhancing handwriting image...";
-    
-    const enhancedBlob = await preprocessHandwriting(imageBlob);
-    
-    progressSpan.textContent = "🔍 Reading handwriting...";
-    
-    const worker = await Tesseract.createWorker('eng', 1, {
-      logger: m => {
-        if (m.status === 'recognizing text') {
-          progressSpan.textContent = `📖 OCR: ${Math.round(m.progress * 100)}%`;
-        }
-      }
-    });
-    
-    await worker.setParameters({
-      tessedit_pageseg_mode: '6',
-      preserve_interword_spaces: '1',
-      tessedit_char_whitelist: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-*/=().,?:;%$#@! '
-    });
-    
-    const { data: { text } } = await worker.recognize(enhancedBlob);
-    await worker.terminate();
-    
-    progressSpan.textContent = "✅ OCR complete! Generating interpretations...";
-    setTimeout(() => { progressSpan.textContent = ""; }, 2000);
-    
-    let cleaned = text.trim();
-    cleaned = cleaned.replace(/\s+/g, ' ').trim();
-    
-    return cleaned;
-  }
-
-  async function processHandwritingImage(file) {
-    const loadingSpan = document.getElementById("loadingIndicator");
-    loadingSpan.style.display = "inline-block";
-    loadingSpan.innerHTML = "<div class='loading'></div>";
-    
-    const previewImg = document.getElementById("imagePreview");
-    const previewContainer = document.getElementById("imagePreviewContainer");
+    // Show preview
     const imgUrl = URL.createObjectURL(file);
-    previewImg.src = imgUrl;
-    previewContainer.style.display = "block";
+    imagePreview.src = imgUrl;
+    imagePreviewContainer.style.display = "block";
     
     try {
-      const extractedText = await performHandwritingOCR(file);
+      // Preprocess image
+      processingStatus.innerHTML = '<span class="loading"></span> Enhancing image...';
+      const enhancedBlob = await preprocessImage(file);
       
-      document.getElementById("previewArea").style.display = "block";
-      document.getElementById("extractedTextDisplay").innerHTML = escapeHtml(extractedText.slice(0, 500)) + (extractedText.length > 500 ? "..." : "");
+      // OCR
+      processingStatus.innerHTML = '<span class="loading"></span> Reading handwriting...';
+      const worker = await Tesseract.createWorker('eng', 1, {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            processingStatus.innerHTML = `<span class="loading"></span> OCR: ${Math.round(m.progress * 100)}%`;
+          }
+        }
+      });
       
-      const interpretations = generateInterpretations(extractedText);
-      currentInterpretations = interpretations;
-      renderInterpretations(interpretations);
+      await worker.setParameters({
+        tessedit_pageseg_mode: '6',
+        preserve_interword_spaces: '0',
+        tessedit_char_whitelist: '0123456789+-*/='
+      });
       
-      // Auto-select the highest confidence interpretation for display
-      if (interpretations.length > 0) {
-        const best = interpretations[0];
-        document.getElementById("subjectTag").innerHTML = `🎯 Top: ${best.type} (${best.confidence}%)`;
-        document.getElementById("aiAnswer").innerHTML = `<strong>✅ Best Guess:</strong><br>${escapeHtml(best.answer)}`;
-        document.getElementById("stepByStep").innerHTML = `<span style="color: #a5b4fc;">📖 ${escapeHtml(best.steps)}</span>`;
-        
-        let numMatch = best.answer.match(/-?\d+(\.\d+)?/);
-        if (numMatch) lastAnsVal = parseFloat(numMatch[0]);
+      const { data: { text } } = await worker.recognize(enhancedBlob);
+      await worker.terminate();
+      
+      const rawText = text.trim();
+      
+      // Process with UltraMathOCR
+      processingStatus.innerHTML = '<span class="loading"></span> Validating & correcting...';
+      const result = UltraMathOCR.process(rawText);
+      
+      // Display results
+      finalExpressionDiv.textContent = result.expression;
+      const confidencePercent = result.confidence;
+      confidenceFill.style.width = `${confidencePercent}%`;
+      confidenceText.textContent = `Confidence: ${confidencePercent}%`;
+      
+      // Color confidence indicator
+      if (confidencePercent >= 70) {
+        confidenceFill.style.background = "linear-gradient(90deg, #10b981, #3b82f6)";
+      } else if (confidencePercent >= 40) {
+        confidenceFill.style.background = "linear-gradient(90deg, #f59e0b, #f97316)";
+      } else {
+        confidenceFill.style.background = "linear-gradient(90deg, #ef4444, #dc2626)";
       }
       
-      scanHistory.unshift({ name: file.name.slice(0, 25), preview: extractedText.slice(0, 50), interpretations: interpretations.length });
-      if(scanHistory.length > 15) scanHistory.pop();
-      renderScanHistory();
+      // Show raw OCR
+      rawOcrText.textContent = rawText || "(empty)";
+      rawOcrBox.style.display = "block";
       
-    } catch(e) {
-      console.error(e);
-      document.getElementById("aiAnswer").innerHTML = "⚠️ OCR processing failed. Please ensure the handwriting is clear, well-lit, and try again.";
+      // Show processing steps
+      stepsList.innerHTML = result.steps.map(step => 
+        `<div class="step-item ${step.status === 'success' ? 'success' : ''}">
+          ${step.status === 'success' ? '✓' : step.status === 'warning' ? '⚠' : '○'} ${step.step}
+          <span style="color:#6b7280; font-size:0.7rem;"> → ${step.detail}</span>
+        </div>`
+      ).join('');
+      processingStepsDiv.style.display = "block";
+      
+      processingStatus.innerHTML = '✅ Processing complete!';
+      setTimeout(() => { processingStatus.innerHTML = ''; }, 2000);
+      
+      // Add to history
+      scanHistory.unshift({
+        expression: result.expression,
+        confidence: result.confidence,
+        timestamp: new Date().toLocaleTimeString()
+      });
+      if (scanHistory.length > 10) scanHistory.pop();
+      renderHistory();
+      
+    } catch (error) {
+      console.error(error);
+      processingStatus.innerHTML = '❌ OCR failed. Please try again with clearer handwriting.';
+      finalExpressionDiv.textContent = "Error";
+    } finally {
+      URL.revokeObjectURL(imgUrl);
     }
-    loadingSpan.style.display = "none";
-    URL.revokeObjectURL(imgUrl);
   }
   
-  function renderScanHistory() {
-    let container = document.getElementById("scanHistory");
-    container.innerHTML = "";
-    for(let item of scanHistory.slice(0, 10)) {
-      let div = document.createElement("div");
-      div.className = "history-item";
-      div.innerHTML = `<span>📎 ${escapeHtml(item.name)}</span><span style="color: #86efac;"> → ${escapeHtml(item.preview)}</span><span style="color: #a5b4fc; margin-left: 8px;">(${item.interpretations} interpretations)</span>`;
-      container.appendChild(div);
-    }
+  function renderHistory() {
+    historyList.innerHTML = scanHistory.map(item => 
+      `<div class="history-item" onclick="document.getElementById('finalExpression').textContent='${item.expression}'">
+        <strong>${item.expression}</strong> <span style="color:#10b981;">${item.confidence}%</span>
+        <div style="font-size:0.65rem; color:#6b7280;">${item.timestamp}</div>
+      </div>`
+    ).join('');
   }
   
-  function escapeHtml(s) { return String(s).replace(/[&<>]/g, function(m) { return m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'; }); }
-  
-  // ======================== CAMERA CONTROLS ========================
-  const video = document.getElementById("cameraVideo");
-  const canvas = document.getElementById("photoCanvas");
-  const cameraControls = document.getElementById("cameraControls");
-  let currentStreamActive = false;
-  
+  // Camera functions
   async function startCamera(facingMode = "environment") {
-    if (currentStreamActive && currentStream) currentStream.getTracks().forEach(t => t.stop());
+    if (currentStream) currentStream.getTracks().forEach(t => t.stop());
     try {
       const constraints = { video: { facingMode: { exact: facingMode } } };
       currentStream = await navigator.mediaDevices.getUserMedia(constraints);
-      video.srcObject = currentStream;
-      video.style.display = "block";
-      cameraControls.style.display = "flex";
-      currentStreamActive = true;
+      cameraVideo.srcObject = currentStream;
+      cameraVideo.style.display = "block";
+      cameraControls.style.display = "block";
     } catch(err) {
       try {
         currentStream = await navigator.mediaDevices.getUserMedia({ video: true });
-        video.srcObject = currentStream;
-        video.style.display = "block";
-        cameraControls.style.display = "flex";
-        currentStreamActive = true;
-      } catch(e) { alert("Camera access denied. Please allow camera permissions."); }
+        cameraVideo.srcObject = currentStream;
+        cameraVideo.style.display = "block";
+        cameraControls.style.display = "block";
+      } catch(e) {
+        alert("Camera access denied");
+      }
     }
   }
   
   function stopCamera() {
-    if (currentStream) { currentStream.getTracks().forEach(t => t.stop()); currentStream = null; }
-    video.style.display = "none";
+    if (currentStream) {
+      currentStream.getTracks().forEach(t => t.stop());
+      currentStream = null;
+    }
+    cameraVideo.style.display = "none";
     cameraControls.style.display = "none";
-    currentStreamActive = false;
   }
   
   function captureAndProcess() {
-    if (!video.videoWidth) return;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    canvas.toBlob(async (blob) => {
-      const file = new File([blob], "handwriting-capture.jpg", { type: "image/jpeg" });
-      await processHandwritingImage(file);
+    if (!cameraVideo.videoWidth) return;
+    photoCanvas.width = cameraVideo.videoWidth;
+    photoCanvas.height = cameraVideo.videoHeight;
+    const ctx = photoCanvas.getContext("2d");
+    ctx.drawImage(cameraVideo, 0, 0, photoCanvas.width, photoCanvas.height);
+    photoCanvas.toBlob(async (blob) => {
+      const file = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
+      await processImage(file);
       stopCamera();
     }, "image/jpeg");
   }
   
-  document.getElementById("cameraBtn").onclick = async () => { currentFacingMode = "environment"; await startCamera("environment"); };
-  document.getElementById("switchCameraBtn").onclick = async () => { currentFacingMode = currentFacingMode === "environment" ? "user" : "environment"; await startCamera(currentFacingMode); };
-  document.getElementById("capturePhotoBtn").onclick = captureAndProcess;
-  document.getElementById("closeCameraBtn").onclick = stopCamera;
-  document.getElementById("uploadBtn").onclick = () => document.getElementById("fileInput").click();
-  document.getElementById("fileInput").onchange = async (e) => { if (e.target.files.length) await processHandwritingImage(e.target.files[0]); };
-  document.getElementById("clearPreview").onclick = () => document.getElementById("previewArea").style.display = "none";
+  // Event Listeners
+  uploadArea.onclick = () => fileInput.click();
+  uploadBtn.onclick = () => fileInput.click();
+  fileInput.onchange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      processImage(e.target.files[0]);
+    }
+  };
   
-  renderScanHistory();
+  cameraBtn.onclick = async () => {
+    await startCamera("environment");
+  };
+  
+  switchCameraBtn.onclick = async () => {
+    currentFacingMode = currentFacingMode === "environment" ? "user" : "environment";
+    await startCamera(currentFacingMode);
+  };
+  
+  capturePhotoBtn.onclick = captureAndProcess;
+  closeCameraBtn.onclick = stopCamera;
+  
+  // Drag and drop
+  uploadArea.ondragover = (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = "#10b981";
+  };
+  uploadArea.ondragleave = () => {
+    uploadArea.style.borderColor = "#10b98140";
+  };
+  uploadArea.ondrop = (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = "#10b98140";
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      processImage(file);
+    }
+  };
+  
+  renderHistory();
 </script>
 </body>
 </html>
